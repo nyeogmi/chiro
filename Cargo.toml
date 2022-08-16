@@ -1,18 +1,14 @@
 [package]
 name = "chiro"
-description = "A curses-style terminal view that runs inside a pixel buffer. (Rewrite of chiropterm)"
-version = "0.1.0"
+description = "A curses-style terminal view that runs inside a pixel buffer (Rewrite of chiropterm)"
+version = "0.0.1"
 authors = ["Nyeogmi Choi"]
 edition = "2021"
-repository = "https://github.com/Nyeogmi/chiro"
+repository = "https://github.com/nyeogmi/chiro"
 readme = "README.md"
 keywords = ["terminal", "curses"]
 categories = []
 license = "MIT"
-include = [
-    "/README.md",
-    "/src/**/*"
-]
 
 [dependencies]
 # TODO: Update these
