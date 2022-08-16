@@ -1,4 +1,4 @@
-use chiropterm2::{Window, Color, Font};
+use chiro::{Window, Color, Font};
 use euclid::size2;
 
 fn main() {
