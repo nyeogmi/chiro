@@ -1,4 +1,4 @@
-use chiro::{Window, Color, Font};
+use chiro::{Window, Color, Font, Drawable};
 use euclid::size2;
 
 fn main() {
@@ -9,8 +9,8 @@ fn main() {
         Color::rgb(192, 192, 192),
     );
 
-    win.screen().puts(1, 1, Font::Normal, "IT'S A BAT PARTY!! WHOA!");
-    win.screen().puts(1, 3, Font::Small, "IT'S A BAT PARTY!! WHOA!");
+    win.at_i((1, 1)).puts("IT'S A BAT PARTY!! WHOA!");
+    win.at_i((1, 3)).font(Font::Small).push_mod(&|z| z.fg = Color::rgb(128, 0, 0)).puts("IT'S A BAT PARTY!! WHOA!");
 
     win.getch();
 }
