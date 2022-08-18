@@ -4,10 +4,11 @@ use crate::aliases::*;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Event {
+    Exit,
     Tick(u64),
     Mouse(MouseEvent),
-    Keyboard(KeyEvent),
-    SimpleKeyboard(SimpleKeyEvent),
+    Type(TypeEvent),
+    Press(PressEvent),
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -41,14 +42,14 @@ impl MouseButton {
 
 // TODO: Add an "is_accept()" method that returns true for enter and space
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
-pub enum KeyEvent {
-    Press(KeyCombo),
-    Release(KeyCombo),
+pub enum TypeEvent {
+    Press(Keystroke),
+    Release(Keystroke),
     Type(char),
 }
 
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
-pub struct KeyCombo {
+pub struct Keystroke {
     pub code: Keycode,
     pub shift: bool,
     pub control: bool,
@@ -97,44 +98,32 @@ pub enum Keycode {
 }
 
 
-impl KeyEvent {
-    pub fn alter_combo(&mut self, alter: impl FnOnce(&mut KeyCombo)) {
+impl TypeEvent {
+    pub fn alter_combo(&mut self, alter: impl FnOnce(&mut Keystroke)) {
         match self {
-            KeyEvent::Press(k) => alter(k),
-            KeyEvent::Release(k) => alter(k),
-            KeyEvent::Type(_) => {},
+            TypeEvent::Press(k) => alter(k),
+            TypeEvent::Release(k) => alter(k),
+            TypeEvent::Type(_) => {},
         }
     }
 
-    pub fn get_combo(&self) -> Option<KeyCombo> {
+    pub fn get_combo(&self) -> Option<Keystroke> {
         match self {
-            KeyEvent::Press(k) => Some(*k),
-            KeyEvent::Release(k) => Some(*k),
-            KeyEvent::Type(_) => None,
+            TypeEvent::Press(k) => Some(*k),
+            TypeEvent::Release(k) => Some(*k),
+            TypeEvent::Type(_) => None,
         }
-    }
-    
-    pub fn is_down(&self) -> bool {
-        match self {
-            KeyEvent::Press(_) => true,
-            KeyEvent::Release(_) => false,
-            KeyEvent::Type(_) => true,
-        }
-    }
-
-    pub fn is_up(&self) -> bool {
-        return !self.is_down()
     }
 }
 
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
-pub enum SimpleKeyEvent {
-    Press(SimpleKeycode),
-    Release(SimpleKeycode),
+pub enum PressEvent {
+    Press(PressKey),
+    Release(PressKey),
 }
 
 #[derive(Debug, Enum, Eq, PartialEq, Ord, PartialOrd, Hash, Clone, Copy)]
-pub enum SimpleKeycode {
+pub enum PressKey {
     // Unashamedly inspired by a similar enum from minifb
     // Removes some keys that terminals would understand but which a game wouldn't
     Key0 = 0, Key1 = 1, Key2 = 2, Key3 = 3, Key4 = 4,

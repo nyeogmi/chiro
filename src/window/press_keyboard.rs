@@ -3,16 +3,16 @@ use std::collections::VecDeque;
 use enum_map::EnumMap;
 use minifb::{Key as MinifbKey, Window};
 
-use crate::input::{SimpleKeycode, SimpleKeyEvent};
+use crate::input::{PressKey, PressEvent};
 
-pub(crate) struct SimpleKeyboard {
-    keys_down: EnumMap<SimpleKeycode, bool>,
-    events: VecDeque<SimpleKeyEvent>,
+pub(crate) struct PressKeyboard {
+    keys_down: EnumMap<PressKey, bool>,
+    events: VecDeque<PressEvent>,
 }
 
-impl SimpleKeyboard {
+impl PressKeyboard {
     pub fn new() -> Self {
-        SimpleKeyboard { keys_down: EnumMap::default(), events: VecDeque::new() }
+        PressKeyboard { keys_down: EnumMap::default(), events: VecDeque::new() }
     }
 
     pub fn update(&mut self, window: &mut Window) {
@@ -30,8 +30,8 @@ impl SimpleKeyboard {
                 let old_down = self.keys_down[key];
 
                 match (old_down, *new_down) {
-                    (false, true) => { self.events.push_back(SimpleKeyEvent::Press(key)); }
-                    (true, false) => { self.events.push_back(SimpleKeyEvent::Release(key)); }
+                    (false, true) => { self.events.push_back(PressEvent::Press(key)); }
+                    (true, false) => { self.events.push_back(PressEvent::Release(key)); }
                     (true, true) => {}
                     (false, false) => {}
                 }
@@ -41,14 +41,14 @@ impl SimpleKeyboard {
         }
     }
 
-    pub fn pop_event(&mut self) -> Option<SimpleKeyEvent> {
+    pub fn pop_event(&mut self) -> Option<PressEvent> {
         self.events.pop_front()
     }
 }
 
-fn minifb_to_simple_keycode(key: MinifbKey) -> Option<SimpleKeycode> {
+fn minifb_to_simple_keycode(key: MinifbKey) -> Option<PressKey> {
     use MinifbKey as M;
-    use SimpleKeycode::*;
+    use PressKey::*;
 
     Some(match key {
         M::Key0 => Key0, M::Key1 => Key1, M::Key2 => Key2, M::Key3 => Key3,

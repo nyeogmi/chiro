@@ -3,41 +3,42 @@ use euclid::point2;
 
 use crate::aliases::*;
 
-use super::{Event, Keycode, MouseEvent, KeyEvent, MouseButton, SimpleKeycode, SimpleKeyEvent, KeyCombo};
+use super::{Event, MouseEvent, TypeEvent, MouseButton, PressKey, PressEvent};
 
 pub struct Input {
-    keyboard: Keyboard,
+    keyboard: TypeKeyboard,
     mouse: Mouse,
 }
 
 impl Input {
     pub fn new() -> Input {
-        Input { keyboard: Keyboard::new(), mouse: Mouse::new() }
+        Input { keyboard: TypeKeyboard::new(), mouse: Mouse::new() }
     }
 
     pub fn on_event(&mut self, event: Event) {
         match event {
+            Event::Exit => {}
             Event::Tick(_) => { 
                 self.keyboard.on_tick();
                 self.mouse.on_tick();
             }
-            Event::SimpleKeyboard(k) => { self.keyboard.on_simple_event(k) }
-            Event::Keyboard(k) => { self.keyboard.on_event(k) }
+            Event::Press(k) => { self.keyboard.on_simple_event(k) }
+            Event::Type(k) => { self.keyboard.on_event(k) }
             Event::Mouse(m) => { self.mouse.on_event(m) }
         }
     }
 }
 
-pub struct Keyboard {
+pub struct TypeKeyboard {
     typed_chars: String,
-    is_down: EnumMap<SimpleKeycode, bool>,
-    is_pressed: EnumMap<SimpleKeycode, bool>,
-    is_released: EnumMap<SimpleKeycode, bool>,
+    is_down: EnumMap<PressKey, bool>,
+    is_pressed: EnumMap<PressKey, bool>,
+    is_released: EnumMap<PressKey, bool>,
 }
 
-impl Keyboard {
-    pub fn new() -> Keyboard {
-        Keyboard {
+impl TypeKeyboard {
+    pub fn new() -> TypeKeyboard {
+        TypeKeyboard {
             typed_chars: String::new(),
             is_down: EnumMap::default(),
             is_pressed: EnumMap::default(),
@@ -51,31 +52,23 @@ impl Keyboard {
         self.is_released = EnumMap::default();
     }
 
-    fn on_event(&mut self, k: KeyEvent) {
+    fn on_event(&mut self, k: TypeEvent) {
         match k {
-            // TODO: These cases existed in chiropterm 1
-            // Do we need them?
-            KeyEvent::Press(KeyCombo { shift: false, control: false, code: Keycode::Backspace }) => { 
-                self.on_simple_event(SimpleKeyEvent::Press(SimpleKeycode::Backspace))
-            }
-            KeyEvent::Release(KeyCombo { shift: false, control: false, code: Keycode::Backspace }) => { 
-                self.on_simple_event(SimpleKeyEvent::Release(SimpleKeycode::Backspace))
-            }
-            KeyEvent::Press(_) => { }
-            KeyEvent::Release(_) => {}
-            KeyEvent::Type(c) => {
+            TypeEvent::Press(_) => { }
+            TypeEvent::Release(_) => { }
+            TypeEvent::Type(c) => {
                 self.typed_chars.push(c)
             },
         }
     }
 
-    fn on_simple_event(&mut self, k: SimpleKeyEvent) {
+    fn on_simple_event(&mut self, k: PressEvent) {
         match k {
-            SimpleKeyEvent::Press(kc) => {
+            PressEvent::Press(kc) => {
                 self.is_down[kc] = true;
                 self.is_pressed[kc] = true;
             }
-            SimpleKeyEvent::Release(kc) => {
+            PressEvent::Release(kc) => {
                 self.is_down[kc] = false;
                 self.is_released[kc] = true;
             }

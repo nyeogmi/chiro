@@ -4,6 +4,7 @@ use super::*;
 use euclid::*;
 
 pub trait Drawable {
+    fn clear(&mut self);
     fn raw_view(&self, zp: ZelPointI) -> Zel;
     fn raw_at(&mut self, zp: ZelPointI) -> Option<&mut Zel>;
 
@@ -50,7 +51,7 @@ impl<'a, D: ?Sized+Drawable> At<'a, D> {
         self
     }
 
-    pub fn putc(mut self, c: char) -> Self {
+    pub fn putc(self, c: char) -> Self {
         let mut font = Font::Normal;
         for i in self.modifiers.iter() {
             if let Modifier::Font(f) = i { font = *f; }

@@ -2,7 +2,7 @@ use std::{cell::RefCell, collections::{BTreeMap, VecDeque}, rc::Rc};
 
 use minifb::{Key as MinifbKey, Window};
 
-use crate::input::{KeyCombo, KeyEvent, Keycode};
+use crate::input::{Keystroke, TypeEvent, Keycode};
 
 pub(crate) struct Keyboard {
     correlator: KeyCorrelatorRef
@@ -26,7 +26,7 @@ impl Keyboard {
         }
     }
 
-    pub fn pop_event(&mut self) -> Option<KeyEvent> {
+    pub fn pop_event(&mut self) -> Option<TypeEvent> {
         self.correlator.0.borrow_mut().events.pop_front()
     }
 }
@@ -35,6 +35,8 @@ struct KeyCorrelatorRef(Rc<RefCell<KeyCorrelator>>);
 
 impl minifb::InputCallback for KeyCorrelatorRef {
     fn add_char(&mut self, uni_char: u32) {
+        // ignore keys that are ctrl-something -- they are a very old terminal hack
+        if (1..=26).contains(&uni_char) { return }
         self.0.borrow_mut().utf32_keys.push_back(uni_char)
     }
 }
@@ -43,7 +45,7 @@ impl minifb::InputCallback for KeyCorrelatorRef {
 struct KeyCorrelator {
     utf32_keys: VecDeque<u32>,  
     keys_down: BTreeMap<MinifbKey, MinifbKeyMode>,
-    events: VecDeque<KeyEvent>,
+    events: VecDeque<TypeEvent>,
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -71,14 +73,14 @@ impl KeyCorrelator {
             // see if this is a key where we infer a keycode from a typed character
             if let Some(theoretical_code) = most_likely_keycode(c) {
                 self.events.push_back(censor_unhelpful_features(
-                    KeyEvent::Press(KeyCombo {
+                    TypeEvent::Press(Keystroke {
                         shift, control, code: theoretical_code,
                     })
                 ))
             }  else {
                 // still have to type it!!
                 self.events.push_back(censor_unhelpful_features(
-                    KeyEvent::Type(c)
+                    TypeEvent::Type(c)
                 ));
             }
         }
@@ -89,7 +91,7 @@ impl KeyCorrelator {
             if !self.keys_down.contains_key(key) {
                 // newly down
                 self.events.push_back(censor_unhelpful_features(
-                    KeyEvent::Press(KeyCombo { code, shift, control })
+                    TypeEvent::Press(Keystroke { code, shift, control })
                 ));
             }
         }
@@ -98,7 +100,7 @@ impl KeyCorrelator {
 
             if !new_keys_down.contains(key) {
                 self.events.push_back(censor_unhelpful_features(
-                    KeyEvent::Release(KeyCombo { code, shift: details.shift, control: details.control })
+                    TypeEvent::Release(Keystroke { code, shift: details.shift, control: details.control })
                 ))
             }
         }
@@ -141,7 +143,7 @@ fn minifb_to_keycode(key: MinifbKey) -> Option<Keycode> {
         M::RightBracket => RightBracket, M::Semicolon => Semicolon,
 
         // we get backspaces specifically from text
-        M::Slash => Slash, M::Backspace => return None, M::Delete => Delete,
+        M::Slash => Slash, M::Backspace => Backspace, M::Delete => Delete,
         M::End => End, M::Enter => Enter,
 
         M::Escape => Escape,
@@ -172,13 +174,13 @@ fn most_likely_keycode(c: char) -> Option<Keycode> {
     })
 }
 
-fn censor_unhelpful_features(mut key: KeyEvent) -> KeyEvent {
+fn censor_unhelpful_features(mut key: TypeEvent) -> TypeEvent {
     // This just deals with a bunch of miscellaneous things bad input systems might do
     key = match key {
-        KeyEvent::Type('\r'|'\n') => 
-            KeyEvent::Press(KeyCombo { code: Keycode::Enter, shift: false, control: false }),
-        KeyEvent::Type('\t') => 
-            KeyEvent::Press(KeyCombo { code: Keycode::Tab, shift: false, control: false }),
+        TypeEvent::Type('\r'|'\n') => 
+            TypeEvent::Press(Keystroke { code: Keycode::Enter, shift: false, control: false }),
+        TypeEvent::Type('\t') => 
+            TypeEvent::Press(Keystroke { code: Keycode::Tab, shift: false, control: false }),
         _ => key
     };
 

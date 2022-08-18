@@ -25,10 +25,6 @@ impl Screen {
         self.size = size;
         self.zels = vec![Zel::default(); (size.width * size.height) as usize];
     }
-
-    pub fn clear(&mut self) {
-        self.resize(self.size)
-    }
 }
 
 #[derive(Clone, Copy, Default)]
@@ -52,5 +48,9 @@ impl Drawable for Screen {
             return None
         }
         return self.zels.get_mut((xy.y as u32 * self.size.width + xy.x as u32) as usize)
+    }
+
+    fn clear(&mut self) {
+        self.resize(self.size)
     }
 }

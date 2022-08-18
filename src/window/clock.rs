@@ -25,7 +25,7 @@ impl Clock {
             let ntt_2 = lfa + Duration::from_micros(TICK_MICROSECONDS * 2);
             if ntt_2 < now {
                 (true, now)  // don't use the ordinary tick timing, we've dropped a frame
-            }  else if ntt_1 < now{
+            }  else if ntt_1 < now {
                 (true, ntt_1)  // pretend the tick happened at its scheduled time
             } else {
                 (false, now)
