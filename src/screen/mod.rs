@@ -1,12 +1,13 @@
 use euclid::*;
 
 use crate::{aliases::*, tileset::Tile, color::Color};
+mod dirtyregion;
 mod render;
 mod pixelfb;
 
+pub use dirtyregion::DirtyRegion;
 pub use pixelfb::PixelFB;
 
-#[derive(Clone)]
 pub struct Screen {
     pub(crate) size: ZelSize,
     pub(crate) zels: Vec<Zel>,
@@ -24,6 +25,17 @@ impl Screen {
     pub fn resize(&mut self, size: ZelSize) {
         self.size = size;
         self.zels = vec![Zel::default(); (size.width * size.height) as usize];
+    }
+}
+
+impl Clone for Screen {
+    fn clone(&self) -> Self {
+        Self { size: self.size.clone(), zels: self.zels.clone(), bg: self.bg.clone(), fg: self.fg.clone() }
+    }
+
+    fn clone_from(&mut self, other: &Screen) {
+        self.size = other.size.clone();
+        self.zels.clone_from(&other.zels);
     }
 }
 

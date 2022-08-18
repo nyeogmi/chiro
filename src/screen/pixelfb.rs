@@ -17,7 +17,7 @@ impl PixelFB {
     }
 
     // true if work was done
-    pub(crate) fn draw(&mut self, new: Screen, new_selection: Option<Affordance>) -> bool {
+    pub(crate) fn draw(&mut self, new: &Screen, new_selection: Option<Affordance>, dirty_cells: Option<&[ZelPoint]>) -> bool {
         let new_px_size = new.size.to_pixels();
         let new_buf_sz = (new_px_size.width * new_px_size.height) as usize;
 
@@ -25,7 +25,7 @@ impl PixelFB {
             // TODO: fucking YUCK, this logic is ugly
             if self.buffer.len() == new_buf_sz {
                 if new.size == old.size {
-                    Self::draw_differences(&old, self.old_selection, &new, new_selection, &mut self.buffer)
+                    Self::draw_differences(&old, self.old_selection, &new, new_selection, &mut self.buffer, dirty_cells)
                 }
                 else {
                     self.completely_redraw(&new);
@@ -44,13 +44,17 @@ impl PixelFB {
             true
         };
 
-        self.old = Some(new);
+        if let Some(scr) = self.old.as_mut() {
+            scr.clone_from(new);
+        } else {
+            self.old = Some(new.clone())
+        }
         self.old_selection = new_selection;
 
         result
     }
 
-    fn draw_differences(old: &Screen, old_selection: Option<Affordance>, new: &Screen, new_selection: Option<Affordance>, buffer: &mut Vec<u32>) -> bool {
+    fn draw_differences(old: &Screen, old_selection: Option<Affordance>, new: &Screen, new_selection: Option<Affordance>, buffer: &mut Vec<u32>, dirty_cells: Option<&[ZelPoint]>) -> bool {
         let size = new.size;
         let w = size.width;
         let h = size.height;
@@ -62,17 +66,27 @@ impl PixelFB {
         let new_wfg = new.fg;
 
         let mut touched = false;
-        for y in 0..h {
-            for x in 0..w {
-                let old = old.view((x, y)).adapted_for(old_wbg, old_wfg, old_selection);
-                let new = new.view((x, y)).adapted_for(new_wbg, new_wfg, new_selection);
 
-                if old.visually_identical(new) {
-                    new.physically_draw(buffer, x, y, w);
-                    touched = true
+        let mut cb = |x: u32, y: u32| {
+            let old = old.view((x, y)).adapted_for(old_wbg, old_wfg, old_selection);
+            let new = new.view((x, y)).adapted_for(new_wbg, new_wfg, new_selection);
+
+            if old.visually_identical(new) {
+                new.physically_draw(buffer, x, y, w);
+                touched = true
+            }
+        };
+
+        if let Some(dc) = dirty_cells {
+            for c in dc { cb(c.x, c.y) }
+        } else {
+            for y in 0..h {
+                for x in 0..w {
+                    cb(x, y)
                 }
             }
         }
+
         touched
     }
 

@@ -8,6 +8,7 @@ pub(crate) const ZEL_PIXELS_Y: u32 = 8;
 
 pub type ZelPoint = Point2D<u32, ZelSpace>;
 pub type ZelSize = Size2D<u32, ZelSpace>;
+pub type ZelRect = Rect<u32, ZelSpace>;
 
 pub type ZelPointI = Point2D<i32, ZelSpace>;
 

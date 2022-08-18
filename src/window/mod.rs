@@ -7,7 +7,7 @@ use std::collections::VecDeque;
 
 use minifb as mfb;
 
-use crate::{aliases::*, color::Color, screen::{PixelFB, Screen, Zel}, input::{Event, Input}};
+use crate::{aliases::*, color::Color, screen::{PixelFB, Screen, Zel, DirtyRegion}, input::{Event, Input}};
 
 use self::{type_keyboard::Keyboard, mouse::Mouse, clock::Clock, press_keyboard::PressKeyboard};
 
@@ -20,7 +20,7 @@ pub struct Window {
     window: Option<mfb::Window>,
     fb: PixelFB, 
     input: Input, postponed_event: Option<Event>,
-    touched: bool,
+    dirty_region: DirtyRegion,
 
     // drivers
     clock: Clock,
@@ -44,7 +44,7 @@ impl Window {
 
             fb: PixelFB::new(), screen: Screen::new(size, bg, fg),
             input: Input::new(), postponed_event: None,
-            touched: true,
+            dirty_region: DirtyRegion::new(),
 
             clock: Clock::new(),
             keyboard: Keyboard::new(),
@@ -145,16 +145,25 @@ impl Eventable for Window {
             let win = self.window.as_mut().unwrap();
 
             // physically redraw if needed
-            let needs_physical_redraw = self.touched || self.mouse.selection_changed();  // TODO
+            let mouse_sel_changed = self.mouse.selection_changed();  
+            let is_dirty = self.dirty_region.is_dirty();
+            let needs_physical_redraw = is_dirty || mouse_sel_changed;
+
             if needs_physical_redraw {
-                let touched = self.fb.draw(self.screen.clone(), self.mouse.selection());
+                // == figure out what kind of redraw: mouse sel has different implications from normal dirty ==
+                let touched = if is_dirty && !mouse_sel_changed {
+                    self.fb.draw(&self.screen, self.mouse.selection(), self.dirty_region.dirty_cells())
+                } else {
+                    self.fb.draw(&self.screen, self.mouse.selection(), None)
+                };
+
                 if touched {
                     let (buf, sz) = self.fb.view_buffer();
                     win.update_with_buffer(buf, sz.width as usize, sz.height as usize).unwrap();
                 } else {
                     win.update()
                 }
-                self.touched = false;
+                self.dirty_region.reset();
             } else {
                 win.update()
             }
@@ -174,12 +183,15 @@ impl Drawable for Window {
     }
 
     fn raw_at(&mut self, zp: ZelPointI) -> Option<&mut Zel> {
-        self.touched = true;
-        self.screen.raw_at(zp)
+        let zel = self.screen.raw_at(zp);
+        if let Some(_) = zel {
+            self.dirty_region.record(zp)
+        }
+        return zel
     }
 
     fn clear(&mut self) {
-        self.touched = true;
-        self.screen.clear()
+        self.screen.clear();
+        self.dirty_region.saturate();
     }
 }
