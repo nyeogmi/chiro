@@ -1,4 +1,4 @@
-use chiro::{Event, Window, Color, Font, Drawable, Eventable};
+use chiro::{Window, Color, Font, Drawable, Eventable};
 use euclid::size2;
 
 fn main() {

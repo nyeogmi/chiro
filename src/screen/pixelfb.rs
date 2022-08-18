@@ -71,7 +71,7 @@ impl PixelFB {
             let old = old.view((x, y)).adapted_for(old_wbg, old_wfg, old_selection);
             let new = new.view((x, y)).adapted_for(new_wbg, new_wfg, new_selection);
 
-            if old.visually_identical(new) {
+            if !old.visually_identical(new) {
                 new.physically_draw(buffer, x, y, w);
                 touched = true
             }
