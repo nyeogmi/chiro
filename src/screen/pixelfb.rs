@@ -1,4 +1,4 @@
-use euclid::size2;
+use euclid::*;
 
 use crate::{screen::Screen, aliases::*};
 
@@ -64,8 +64,8 @@ impl PixelFB {
         let mut touched = false;
         for y in 0..h {
             for x in 0..w {
-                let old = old.get(x, y).adapted_for(old_wbg, old_wfg, old_selection);
-                let new = new.get(x, y).adapted_for(new_wbg, new_wfg, new_selection);
+                let old = old.view((x, y)).adapted_for(old_wbg, old_wfg, old_selection);
+                let new = new.view((x, y)).adapted_for(new_wbg, new_wfg, new_selection);
 
                 if old.visually_identical(new) {
                     new.physically_draw(buffer, x, y, w);
@@ -87,7 +87,7 @@ impl PixelFB {
 
         for y in 0..h {
             for x in 0..w {
-                let new = new.get(x, y).adapted_for(new_wbg, new_wfg, new_mouseover);
+                let new = new.view((x, y)).adapted_for(new_wbg, new_wfg, new_mouseover);
 
                 new.physically_draw(&mut self.buffer, x, y, w);
             }

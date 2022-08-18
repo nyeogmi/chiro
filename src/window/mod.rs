@@ -7,7 +7,7 @@ use std::collections::VecDeque;
 
 use minifb as mfb;
 
-use crate::{aliases::*, color::Color, screen::{PixelFB, Screen}, input::{Event, Input}};
+use crate::{aliases::*, color::Color, screen::{PixelFB, Screen, Zel}, input::{Event, Input}};
 
 use self::{keyboard::Keyboard, mouse::Mouse, clock::Clock, simple_keyboard::SimpleKeyboard};
 
@@ -93,10 +93,6 @@ impl Window {
         self.window = Some(window);
     }
 
-    pub fn screen(&mut self) -> &mut Screen {
-        &mut self.screen
-    }
-
     pub fn getch(&mut self) -> char {
         self.run_loop(EventLoop { 
             on_input: Box::new(|_, _| Resume::NotYet),
@@ -141,7 +137,7 @@ impl Window {
             }
 
             // and from mouse
-            self.mouse.update(self.screen.size, win, is_new_tick, |xy| self.screen.get(xy.x, xy.y).affordance);
+            self.mouse.update(self.screen.size, win, is_new_tick, |xy| self.screen.view(xy).affordance);
 
             while let Some(mouse_event) = self.mouse.pop_event() {
                 self.input_events.push_back(Event::Mouse(mouse_event))
@@ -178,6 +174,16 @@ impl Window {
         if let Some(win) = self.window.as_mut() {
             win.update()
         }
+    }
+}
+
+impl Drawable for Window {
+    fn raw_view(&self, zp: ZelPointI) -> Zel {
+        self.screen.raw_view(zp)
+    }
+
+    fn raw_at(&mut self, zp: ZelPointI) -> Option<&mut Zel> {
+        self.screen.raw_at(zp)
     }
 }
 

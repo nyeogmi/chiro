@@ -6,6 +6,7 @@ mod screen;
 mod tileset;
 mod window;
 
+pub use aliases::Drawable;
 pub use color::Color;
 pub use font::Font;
 pub use window::Window;

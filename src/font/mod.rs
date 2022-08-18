@@ -4,6 +4,7 @@ use crate::{aliases::*, tileset::{TileSet, Tile}};
 
 mod cp437;
 
+#[derive(Clone, Copy)]
 pub enum Font {
     Normal,
     Small,

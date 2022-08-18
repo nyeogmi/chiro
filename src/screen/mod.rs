@@ -1,6 +1,6 @@
 use euclid::*;
 
-use crate::{aliases::*, tileset::Tile, color::Color, Font};
+use crate::{aliases::*, tileset::Tile, color::Color};
 mod render;
 mod pixelfb;
 
@@ -29,37 +29,28 @@ impl Screen {
     pub fn clear(&mut self) {
         self.resize(self.size)
     }
-
-    pub(crate) fn get(&self, x: u32, y: u32) -> Zel {
-        if x >= self.size.width || y >= self.size.height {
-            return Zel::default()
-        }
-        return self.zels[(y * self.size.width + x) as usize]
-    }
-
-    pub(crate) fn try_get_mut(&mut self, x: u32, y: u32) -> Option<&mut Zel> {
-        if x >= self.size.width || y >= self.size.height {
-            return None
-        }
-        return self.zels.get_mut((y * self.size.width + x) as usize)
-    }
-
-    pub fn puts(&mut self, x: u32, y: u32, font: Font, s: &str) {
-        let w = font.char_size().width;
-        for (i, c) in s.chars().enumerate() {
-            font.char_to_tile(c, |local, tile| {
-                if let Some(zel) = self.try_get_mut(x + w * (i as u32) + local.x, y + local.y) {
-                    zel.tile = tile;
-                }
-            })
-        }
-    }
 }
 
 #[derive(Clone, Copy, Default)]
-pub(crate) struct Zel {
-    pub(crate) tile: Tile,
-    pub(crate) affordance: Option<Affordance>,
+pub struct Zel {
+    pub tile: Tile,
+    pub affordance: Option<Affordance>,
 
-    pub(crate) bg: Color, pub(crate) fg: Color, 
+    pub bg: Color, pub fg: Color, 
+}
+
+impl Drawable for Screen {
+    fn raw_view(&self, xy: ZelPointI) -> Zel {
+        if xy.x < 0 || xy.y < 0 || xy.x as u32 >= self.size.width || xy.y as u32 >= self.size.height {
+            return Zel::default()
+        }
+        return self.zels[(xy.y as u32 * self.size.width + xy.x as u32) as usize]
+    }
+
+    fn raw_at(&mut self, xy: ZelPointI) -> Option<&mut Zel> {
+        if xy.x < 0 || xy.y < 0 || xy.x as u32 >= self.size.width || xy.y as u32 >= self.size.height {
+            return None
+        }
+        return self.zels.get_mut((xy.y as u32 * self.size.width + xy.x as u32) as usize)
+    }
 }
