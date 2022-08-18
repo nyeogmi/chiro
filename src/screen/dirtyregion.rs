@@ -1,6 +1,6 @@
 use euclid::point2;
 
-use crate::aliases::*;
+use crate::shared::*;
 
 // defaults to 4800, the threshold for 80 x 60
 pub struct DirtyRegion<const MAX_DIRTY: usize = 4800> {

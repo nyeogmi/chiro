@@ -1,6 +1,6 @@
 use euclid::*;
 
-use crate::{aliases::*, tileset::Tile, color::Color};
+use crate::{shared::*, tileset::Tile, color::Color};
 mod dirtyregion;
 mod render;
 mod pixelfb;

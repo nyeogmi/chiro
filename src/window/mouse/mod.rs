@@ -10,7 +10,7 @@ use minifb::{MouseButton as MinifbMouseButton, MouseMode, Window};
 
 use self::{scroll_wheel::ScrollWheelMonitor, wiggle::WiggleMonitor};
 
-use crate::{input::{MouseEvent, MouseButton}, aliases::{ZelPoint, Affordance, ZelSize}};
+use crate::{input::{MouseEvent, MouseButton}, shared::{ZelPoint, Affordance, ZelSize}};
 
 use drag::DragMonitor;
 

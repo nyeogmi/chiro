@@ -1,6 +1,6 @@
 use std::collections::VecDeque;
 
-use crate::aliases::*;
+use crate::shared::*;
 use super::{MouseButton, MouseEvent};
 
 #[derive(Clone, Copy)]

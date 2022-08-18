@@ -1,7 +1,7 @@
 use enum_map::EnumMap;
 use euclid::point2;
 
-use crate::aliases::*;
+use crate::shared::*;
 
 use super::{Event, MouseEvent, TypeEvent, MouseButton, PressKey, PressEvent};
 

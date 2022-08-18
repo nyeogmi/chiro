@@ -1,6 +1,6 @@
 use enum_map::Enum;
 
-use crate::aliases::*;
+use crate::shared::*;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Event {

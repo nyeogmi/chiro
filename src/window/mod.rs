@@ -7,7 +7,7 @@ use std::collections::VecDeque;
 
 use minifb as mfb;
 
-use crate::{aliases::*, color::Color, screen::{PixelFB, Screen, Zel, DirtyRegion}, input::{Event, Input}};
+use crate::{shared::*, color::Color, screen::{PixelFB, Screen, Zel, DirtyRegion}, input::{Event, Input}};
 
 use self::{type_keyboard::Keyboard, mouse::Mouse, clock::Clock, press_keyboard::PressKeyboard};
 

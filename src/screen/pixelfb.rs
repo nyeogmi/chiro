@@ -1,6 +1,6 @@
 use euclid::*;
 
-use crate::{screen::Screen, aliases::*};
+use crate::{screen::Screen, shared::*};
 
 use super::Zel;
 

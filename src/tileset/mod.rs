@@ -1,6 +1,6 @@
 use std::convert::TryInto;
 
-use crate::aliases::*;
+use crate::shared::*;
 
 pub(crate) struct TileSet<'a> {
     pub buf: &'a [u8],

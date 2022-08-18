@@ -1,6 +1,6 @@
 use euclid::*;
 
-use crate::{aliases::*, tileset::{TileSet, Tile}};
+use crate::{shared::*, tileset::{TileSet, Tile}};
 
 mod cp437;
 

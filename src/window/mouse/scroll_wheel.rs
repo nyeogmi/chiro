@@ -1,6 +1,6 @@
 use std::collections::VecDeque;
 
-use crate::{aliases::*, input::MouseEvent};
+use crate::{shared::*, input::MouseEvent};
 
 pub struct ScrollWheelMonitor {
 }
