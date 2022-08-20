@@ -7,12 +7,12 @@ impl Zel {
         mut self,
         window_bg: Color, 
         window_fg: Color,
-        selection: Option<Affordance>
+        click_selection: Option<Affordance>
     ) -> Zel {
         self.fg = if self.fg.is_opaque() { self.fg } else { window_fg };
         self.bg = if self.bg.is_opaque() { self.bg } else { window_bg };
 
-        if selection.is_some() && selection == self.affordance {
+        if click_selection.is_some() && click_selection == self.click {
             (self.fg, self.bg) = (self.bg, self.fg);
         }
 

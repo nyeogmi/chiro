@@ -1,6 +1,6 @@
 use std::collections::VecDeque;
 
-use crate::shared::*;
+use crate::{shared::*, screen::Zel};
 use super::{MouseButton, MouseEvent};
 
 #[derive(Clone, Copy)]
@@ -59,17 +59,18 @@ impl DragMonitor {
         &mut self,
         events: &mut VecDeque<crate::input::MouseEvent>, 
         mouse_button: MouseButton,
-        affordance: &impl Fn(ZelPoint) -> Option<Affordance>,
+        get_zel: &impl Fn(ZelPoint) -> Zel,
     ) {
         if let Some(ToSend { start, last, now }) = self.event_to_send.take() {
-            let now_selection = affordance(now);
+            let zel = get_zel(now);
 
             events.push_back(MouseEvent::Drag {
                 mouse_button,
                 start,
                 last,
                 now,
-                now_selection
+                now_click_selection: zel.click,
+                now_scroll_selection: zel.scroll,
             });
         }
     }
@@ -78,9 +79,9 @@ impl DragMonitor {
         &mut self,
         events: &mut VecDeque<crate::input::MouseEvent>,
         mouse_button: MouseButton,
-        affordance: &impl Fn(ZelPoint) -> Option<Affordance>,
+        get_zel: &impl Fn(ZelPoint) -> Zel,
     ) {
-        self.post_events(events, mouse_button, affordance);
+        self.post_events(events, mouse_button, get_zel);
 
         self.event_to_send = None;
         self.start = None;

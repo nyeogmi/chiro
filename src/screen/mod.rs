@@ -51,7 +51,8 @@ impl Clone for Screen {
 #[derive(Clone, Copy, Default)]
 pub struct Zel {
     pub tile: Tile,
-    pub affordance: Option<Affordance>,
+    pub click: Option<Affordance>,
+    pub scroll: Option<Affordance>,
 
     pub bg: Color, pub fg: Color, 
 }

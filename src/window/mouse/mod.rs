@@ -10,7 +10,7 @@ use minifb::{MouseButton as MinifbMouseButton, MouseMode, Window};
 
 use self::{scroll_wheel::ScrollWheelMonitor, wiggle::WiggleMonitor};
 
-use crate::{input::{MouseEvent, MouseButton}, shared::{ZelPoint, Affordance, ZelSize}};
+use crate::{input::{MouseEvent, MouseButton}, shared::{ZelPoint, Affordance, ZelSize}, screen::Zel};
 
 use drag::DragMonitor;
 
@@ -31,7 +31,8 @@ struct State {
     down: EnumMap<MouseButton, bool>,
 
     zel: ZelPoint,
-    selection: Option<Affordance>,
+    click_selection: Option<Affordance>,
+    scroll_selection: Option<Affordance>,
 }
 
 
@@ -54,8 +55,8 @@ impl Mouse {
     }
 
     // any_interactor: (normal, scroll)
-    pub fn update(&mut self, size: ZelSize, window: &mut Window, new_tick: bool, get_affordance: impl Fn(ZelPoint) -> Option<Affordance>) {
-        let current_state = Mouse::current_state(size, window, &get_affordance);
+    pub fn update(&mut self, size: ZelSize, window: &mut Window, new_tick: bool, get_zel: impl Fn(ZelPoint) -> Zel) {
+        let current_state = Mouse::current_state(size, window, &get_zel);
 
         if let None = current_state {
             // don't bother generating events for now
@@ -73,34 +74,44 @@ impl Mouse {
             (Some(_), None) => {}
             (Some(old), Some(new)) => {
                 if let Some((_, scroll_y)) = window.get_scroll_wheel() {
-                    self.scroll_wheel.at(&mut self.events, new.zel, scroll_y, &get_affordance)
+                    self.scroll_wheel.at(&mut self.events, new.zel, scroll_y, &get_zel)
                 }
 
                 for mb in MouseButton::ALL {
                     if new.down[mb] && !old.down[mb] {
-                        self.events.push_back(Click(mb, new.zel, new.selection));
+                        self.events.push_back(Click {
+                            mouse_button: mb, 
+                            now: new.zel, 
+                            now_click_selection: new.click_selection, 
+                            now_scroll_selection: new.scroll_selection,
+                        });
                         self.drag[mb].down(new.zel);
                     }
 
                     self.drag[mb].at(new.zel);
 
                     if !new.down[mb] && old.down[mb] {
-                        self.events.push_back(Up(mb, new.zel, new.selection));
-                        self.drag[mb].up(&mut self.events, mb, &get_affordance)
+                        self.events.push_back(Up {
+                            mouse_button: mb, 
+                            now: new.zel, 
+                            now_click_selection: new.click_selection,
+                            now_scroll_selection: new.scroll_selection,
+                        });
+                        self.drag[mb].up(&mut self.events, mb, &get_zel)
                     }
 
                     if new_tick {
-                        self.drag[mb].post_events(&mut self.events, mb, &get_affordance)
+                        self.drag[mb].post_events(&mut self.events, mb, &get_zel)
                     }
                 }
                 self.wiggle.at(new.zel);
-                self.wiggle.post_events(&mut self.events, &get_affordance)
+                self.wiggle.post_events(&mut self.events, &get_zel)
             }
         }
     }
 
     // normal interactor, scroll interactor
-    fn current_state(size: ZelSize, window: &mut Window, get_affordance: &impl Fn(ZelPoint) -> Option<Affordance>) -> Option<State> {
+    fn current_state(size: ZelSize, window: &mut Window, get_zel: &impl Fn(ZelPoint) -> Zel) -> Option<State> {
         // NYEO NOTE: The logic in minifb to compensate for DPI scaling is wrong.
         // This logic is correct, however.
         let mouse_pos = if let Some(mp) = window.get_unscaled_mouse_pos(MouseMode::Pass) { 
@@ -110,17 +121,21 @@ impl Mouse {
         let mouse_x_ideal = ((mouse_pos.0 / overall_size.0 as f32) * size.width as f32) as i32;
         let mouse_y_ideal = ((mouse_pos.1 / overall_size.1 as f32) * size.height as f32) as i32;
 
-        let zel: ZelPoint;
-        let selection: Option<Affordance>;
+        let zel_xy: ZelPoint;
+        let click_selection: Option<Affordance>;
+        let scroll_selection: Option<Affordance>;
         if mouse_x_ideal >= 0 && mouse_y_ideal >= 0 && mouse_x_ideal < size.width as i32 && mouse_y_ideal < size.height as i32 {
-            zel = point2(mouse_x_ideal as u32, mouse_y_ideal as u32);
-            selection = get_affordance(zel);
+            zel_xy = point2(mouse_x_ideal as u32, mouse_y_ideal as u32);
+            let zel = get_zel(zel_xy);
+            click_selection = zel.click;
+            scroll_selection = zel.scroll;
         } else {
-            zel = point2(
+            zel_xy = point2(
                 mouse_x_ideal.min(size.width as i32 - 1).max(0) as u32, 
                 mouse_y_ideal.min(size.height as i32 - 1).max(0) as u32
             );
-            selection = None;
+            click_selection = None;
+            scroll_selection = None;
         }
 
         Some(State { 
@@ -128,17 +143,18 @@ impl Mouse {
                 MouseButton::Left => window.get_mouse_down(MinifbMouseButton::Left),
                 MouseButton::Right => window.get_mouse_down(MinifbMouseButton::Right),
             ],
-            zel,
-            selection
+            zel: zel_xy,
+            click_selection,
+            scroll_selection,
         })
     }
 
-    pub fn selection_changed(&self) -> bool {
-        return self.old.and_then(|n| n.selection) != self.new.and_then(|n| n.selection);
+    pub(crate) fn selection_changed(&self) -> bool {
+        return self.old.and_then(|n| n.click_selection) != self.new.and_then(|n| n.click_selection);
     }
 
-    pub fn selection(&self) -> Option<Affordance> {
-        self.new.and_then(|n| n.selection)
+    pub fn click_selection(&self) -> Option<Affordance> {
+        self.new.and_then(|n| n.click_selection)
     }
 }
 // TODO: Scroll wheel?

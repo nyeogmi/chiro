@@ -32,7 +32,8 @@ enum Modifier<'a> {
     Font(Font),
     Fg(Color),
     Bg(Color),
-    Affordance(Affordance),
+    Click(Option<Affordance>),
+    Scroll(Option<Affordance>),
     Arbitrary(&'a dyn Fn(&mut Zel)),
 }
 
@@ -45,7 +46,6 @@ impl<'a, D: ?Sized+Drawable> At<'a, D> {
             let (dx, dy) = local.to_tuple();
 
             if let Some(zel) = self.drawable.raw_at(point2(bx + dx as i32, by + dy as i32)) {
-                zel.affordance = None;  // NOTE: clear it by default
                 zel.tile = tile;
                 for i in self.modifiers.iter() { 
                     i.apply_to(zel)
@@ -88,8 +88,23 @@ impl<'a, D: ?Sized+Drawable> At<'a, D> {
         self
     }
 
-    pub fn affordance(mut self, affordance: Affordance) -> Self {
-        self.modifiers.push(Modifier::Affordance(affordance));
+    pub fn click(mut self, affordance: Affordance) -> Self {
+        self.modifiers.push(Modifier::Click(Some(affordance)));
+        self
+    }
+
+    pub fn scroll(mut self, affordance: Affordance) -> Self {
+        self.modifiers.push(Modifier::Scroll(Some(affordance)));
+        self
+    }
+
+    pub fn no_click(mut self) -> Self {
+        self.modifiers.push(Modifier::Click(None));
+        self
+    }
+
+    pub fn no_scroll(mut self) -> Self {
+        self.modifiers.push(Modifier::Scroll(None));
         self
     }
 
@@ -110,7 +125,8 @@ impl<'a> Modifier<'a> {
             Modifier::Font(_) => {}
             Modifier::Fg(fg) => zel.fg = *fg,
             Modifier::Bg(bg) => zel.bg = *bg,
-            Modifier::Affordance(aff) => zel.affordance = Some(*aff),
+            Modifier::Click(aff) => zel.click = aff.clone(),
+            Modifier::Scroll(aff) => zel.scroll = aff.clone(),
             Modifier::Arbitrary(f) => f(zel),
         }
     }

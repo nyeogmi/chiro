@@ -133,7 +133,7 @@ impl Eventable for Window {
             }
 
             // and from mouse
-            self.mouse.update(self.screen.size, win, is_new_tick, |xy| self.screen.view(xy).affordance);
+            self.mouse.update(self.screen.size, win, is_new_tick, |xy| self.screen.view(xy));
 
             while let Some(mouse_event) = self.mouse.pop_event() {
                 self.input_events.push_back(Event::Mouse(mouse_event))
@@ -154,9 +154,9 @@ impl Eventable for Window {
             if needs_physical_redraw {
                 // == figure out what kind of redraw: mouse sel has different implications from normal dirty ==
                 let touched = if is_dirty && !mouse_sel_changed {
-                    self.fb.draw(&self.screen, self.mouse.selection(), self.dirty_region.dirty_cells())
+                    self.fb.draw(&self.screen, self.mouse.click_selection(), self.dirty_region.dirty_cells())
                 } else {
-                    self.fb.draw(&self.screen, self.mouse.selection(), None)
+                    self.fb.draw(&self.screen, self.mouse.click_selection(), None)
                 };
 
                 if touched {

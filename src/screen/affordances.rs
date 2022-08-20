@@ -2,7 +2,7 @@ use crate::shared::*;
 
 #[derive(Clone)]
 pub struct Affordances {
-    next: u32
+    next: u64
 }
 
 impl Affordances {

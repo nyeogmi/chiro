@@ -13,19 +13,31 @@ pub enum Event {
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum MouseEvent {
-    Click(MouseButton, ZelPoint, Option<Affordance>),
-    Up(MouseButton, ZelPoint, Option<Affordance>),
+    Click {
+        mouse_button: MouseButton, 
+        now: ZelPoint, 
+        now_click_selection: Option<Affordance>,
+        now_scroll_selection: Option<Affordance>,
+    },
+    Up {
+        mouse_button: MouseButton, 
+        now: ZelPoint, 
+        now_click_selection: Option<Affordance>,
+        now_scroll_selection: Option<Affordance>,
+    },
     Drag { 
         mouse_button: MouseButton, 
         start: ZelPoint, 
         last: ZelPoint,
         now: ZelPoint,
-        now_selection: Option<Affordance>,
+        now_click_selection: Option<Affordance>,
+        now_scroll_selection: Option<Affordance>,
     },
     Wiggle { 
         last: ZelPoint,
         now: ZelPoint,
-        now_selection: Option<Affordance>,
+        now_click_selection: Option<Affordance>,
+        now_scroll_selection: Option<Affordance>,
     },
     Scroll(f32, ZelPoint, Option<Affordance>),
     // wheel?

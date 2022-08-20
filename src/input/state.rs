@@ -85,7 +85,9 @@ impl Keyboard {
 }
 
 pub struct Mouse {
-    selection: Option<Affordance>,
+    click_selection: Option<Affordance>,
+    scroll_selection: Option<Affordance>,
+
     position: ZelPoint,
     scroll: f32,
 
@@ -99,7 +101,9 @@ pub struct Mouse {
 impl Mouse {
     pub fn new() -> Mouse {
         Mouse {
-            selection: None,
+            click_selection: None,
+            scroll_selection: None,
+
             position: point2(0, 0),
             scroll: 0.0,
 
@@ -120,20 +124,21 @@ impl Mouse {
 
     fn on_event(&mut self, m: MouseEvent) {
         match m {
-            MouseEvent::Click(mb, _, _) => {
+            MouseEvent::Click { mouse_button: mb, .. } => {
                 self.is_pressed[mb] = true;
                 self.is_down[mb] = true;
             }
-            MouseEvent::Up(mb, _, _) => {
+            MouseEvent::Up { mouse_button: mb, .. } => {
                 self.is_down[mb] = false;
                 self.is_released[mb] = true;
                 self.drag[mb] = None;
             }
-            MouseEvent::Drag { mouse_button: mb, start, last, now, now_selection: _} => {
+            MouseEvent::Drag { mouse_button: mb, start, last, now, now_click_selection: _, now_scroll_selection: _} => {
                 self.drag[mb] = Some(Drag { start, last, now })
             }
-            MouseEvent::Wiggle { last: _, now, now_selection } => {
-                self.selection = now_selection;
+            MouseEvent::Wiggle { last: _, now, now_click_selection, now_scroll_selection } => {
+                self.click_selection = now_click_selection;
+                self.scroll_selection = now_scroll_selection;
                 self.position = now;
             }
             MouseEvent::Scroll(amt, _, _) => {
@@ -142,13 +147,18 @@ impl Mouse {
         }
     }
 
-    pub fn is_over(&self, affordance: Affordance) -> bool { self.selection == Some(affordance) }
+    pub fn is_click_over(&self, affordance: Affordance) -> bool { self.click_selection == Some(affordance) }
+    pub fn is_scroll_over(&self, affordance: Affordance) -> bool { self.scroll_selection == Some(affordance) }
     pub fn is_pressed(&self, button: MouseButton) -> bool { self.is_pressed[button] }
     pub fn is_released(&self, button: MouseButton) -> bool { self.is_pressed[button] }
     pub fn is_down(&self, button: MouseButton) -> bool { self.is_pressed[button] }
 
-    pub fn left_clicked(&self, affordance: Affordance) -> bool { self.is_pressed(MouseButton::Left) && self.is_over(affordance) }
-    pub fn right_clicked(&self, affordance: Affordance) -> bool { self.is_pressed(MouseButton::Right) && self.is_over(affordance) }
+    pub fn left_clicked(&self, affordance: Affordance) -> bool { self.is_pressed(MouseButton::Left) && self.is_click_over(affordance) }
+    pub fn right_clicked(&self, affordance: Affordance) -> bool { self.is_pressed(MouseButton::Right) && self.is_click_over(affordance) }
+    pub fn scrolled_on(&self, affordance: Affordance) -> Option<f32> {
+        if self.scroll == 0.0 || !self.is_scroll_over(affordance) { return None }
+        return Some(self.scroll);
+    }
 }
 
 pub struct Drag {
