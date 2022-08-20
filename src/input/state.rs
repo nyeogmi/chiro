@@ -6,16 +6,16 @@ use crate::shared::*;
 use super::{Event, MouseEvent, TypeEvent, MouseButton, PressKey, PressEvent};
 
 pub struct Input {
-    keyboard: TypeKeyboard,
+    keyboard: Keyboard,
     mouse: Mouse,
 }
 
 impl Input {
     pub fn new() -> Input {
-        Input { keyboard: TypeKeyboard::new(), mouse: Mouse::new() }
+        Input { keyboard: Keyboard::new(), mouse: Mouse::new() }
     }
 
-    pub fn on_event(&mut self, event: Event) {
+    pub(crate) fn on_event(&mut self, event: Event) {
         match event {
             Event::Exit => {}
             Event::Tick(_) => { 
@@ -27,18 +27,26 @@ impl Input {
             Event::Mouse(m) => { self.mouse.on_event(m) }
         }
     }
+
+    pub fn keyboard(&self) -> &Keyboard {
+        &self.keyboard
+    }
+
+    pub fn mouse(&self) -> &Mouse {
+        &self.mouse
+    }
 }
 
-pub struct TypeKeyboard {
+pub struct Keyboard {
     typed_chars: String,
     is_down: EnumMap<PressKey, bool>,
     is_pressed: EnumMap<PressKey, bool>,
     is_released: EnumMap<PressKey, bool>,
 }
 
-impl TypeKeyboard {
-    pub fn new() -> TypeKeyboard {
-        TypeKeyboard {
+impl Keyboard {
+    pub fn new() -> Keyboard {
+        Keyboard {
             typed_chars: String::new(),
             is_down: EnumMap::default(),
             is_pressed: EnumMap::default(),
@@ -133,6 +141,14 @@ impl Mouse {
             }
         }
     }
+
+    pub fn is_over(&self, affordance: Affordance) -> bool { self.selection == Some(affordance) }
+    pub fn is_pressed(&self, button: MouseButton) -> bool { self.is_pressed[button] }
+    pub fn is_released(&self, button: MouseButton) -> bool { self.is_pressed[button] }
+    pub fn is_down(&self, button: MouseButton) -> bool { self.is_pressed[button] }
+
+    pub fn left_clicked(&self, affordance: Affordance) -> bool { self.is_pressed(MouseButton::Left) && self.is_over(affordance) }
+    pub fn right_clicked(&self, affordance: Affordance) -> bool { self.is_pressed(MouseButton::Right) && self.is_over(affordance) }
 }
 
 pub struct Drag {

@@ -2,4 +2,4 @@ mod event;
 mod state;
 
 pub use event::*;
-pub use state::Input;
+pub use state::{Input, Keyboard, Mouse};

@@ -4,6 +4,7 @@ use super::*;
 use euclid::*;
 
 pub trait Drawable {
+    fn affordance(&mut self) -> Affordance;
     fn clear(&mut self);
     fn raw_view(&self, zp: ZelPointI) -> Zel;
     fn raw_at(&mut self, zp: ZelPointI) -> Option<&mut Zel>;
@@ -31,6 +32,7 @@ enum Modifier<'a> {
     Font(Font),
     Fg(Color),
     Bg(Color),
+    Affordance(Affordance),
     Arbitrary(&'a dyn Fn(&mut Zel)),
 }
 
@@ -43,6 +45,7 @@ impl<'a, D: ?Sized+Drawable> At<'a, D> {
             let (dx, dy) = local.to_tuple();
 
             if let Some(zel) = self.drawable.raw_at(point2(bx + dx as i32, by + dy as i32)) {
+                zel.affordance = None;  // NOTE: clear it by default
                 zel.tile = tile;
                 for i in self.modifiers.iter() { 
                     i.apply_to(zel)
@@ -85,6 +88,11 @@ impl<'a, D: ?Sized+Drawable> At<'a, D> {
         self
     }
 
+    pub fn affordance(mut self, affordance: Affordance) -> Self {
+        self.modifiers.push(Modifier::Affordance(affordance));
+        self
+    }
+
     pub fn push_mod(mut self, modifier: &'a dyn Fn(&mut Zel)) -> Self {
         self.modifiers.push(Modifier::Arbitrary(modifier));
         self
@@ -102,7 +110,8 @@ impl<'a> Modifier<'a> {
             Modifier::Font(_) => {}
             Modifier::Fg(fg) => zel.fg = *fg,
             Modifier::Bg(bg) => zel.bg = *bg,
-            Modifier::Arbitrary(f) => f(zel)
+            Modifier::Affordance(aff) => zel.affordance = Some(*aff),
+            Modifier::Arbitrary(f) => f(zel),
         }
     }
 }

@@ -37,7 +37,7 @@ const HANDLE_INPUT_EVERY: usize = 4166; // 240 FPS
 
 impl Window {
     pub fn new(title: String, size: impl ToZelSize, bg: impl ToColor, fg: impl ToColor) -> Self {
-        Window {
+        let mut win = Window {
             title,
 
             window: None,
@@ -52,7 +52,9 @@ impl Window {
             simple_keyboard: PressKeyboard::new(),
 
             input_events: VecDeque::new(),
-        }
+        };
+        win.dirty_region.saturate();
+        win
     }
 
     fn reconstitute_mfb_window(&mut self) {
@@ -178,9 +180,9 @@ impl Eventable for Window {
 }
 
 impl Drawable for Window {
-    fn raw_view(&self, zp: ZelPointI) -> Zel {
-        self.screen.raw_view(zp)
-    }
+    fn affordance(&mut self) -> Affordance { self.screen.affordance() }
+
+    fn raw_view(&self, zp: ZelPointI) -> Zel { self.screen.raw_view(zp) }
 
     fn raw_at(&mut self, zp: ZelPointI) -> Option<&mut Zel> {
         let zel = self.screen.raw_at(zp);

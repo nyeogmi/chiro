@@ -1,6 +1,8 @@
 use euclid::*;
 
 use crate::{shared::*, tileset::Tile};
+
+mod affordances;
 mod dirtyregion;
 mod render;
 mod pixelfb;
@@ -8,8 +10,11 @@ mod pixelfb;
 pub use dirtyregion::DirtyRegion;
 pub use pixelfb::PixelFB;
 
+use self::affordances::Affordances;
+
 pub struct Screen {
     pub(crate) size: ZelSize,
+    pub(crate) affordances: Affordances,
     pub(crate) zels: Vec<Zel>,
     pub(crate) bg: Color, pub(crate) fg: Color,
 }
@@ -17,7 +22,7 @@ pub struct Screen {
 impl Screen {
     pub fn new(size: impl ToZelSize, bg: impl ToColor, fg: impl ToColor) -> Self {
         let zels = vec![];
-        let mut screen = Self { size: size2(0, 0), zels, bg: bg.to_color(), fg: fg.to_color() };
+        let mut screen = Self { size: size2(0, 0), affordances: Affordances::new(), zels, bg: bg.to_color(), fg: fg.to_color() };
         screen.resize(size);
         screen
     }
@@ -31,12 +36,15 @@ impl Screen {
 
 impl Clone for Screen {
     fn clone(&self) -> Self {
-        Self { size: self.size.clone(), zels: self.zels.clone(), bg: self.bg.clone(), fg: self.fg.clone() }
+        Self { size: self.size.clone(), affordances: self.affordances.clone(), zels: self.zels.clone(), bg: self.bg.clone(), fg: self.fg.clone() }
     }
 
     fn clone_from(&mut self, other: &Screen) {
         self.size = other.size.clone();
+        self.affordances = other.affordances.clone();
         self.zels.clone_from(&other.zels);
+        self.bg = other.bg;
+        self.fg = other.fg;
     }
 }
 
@@ -49,6 +57,10 @@ pub struct Zel {
 }
 
 impl Drawable for Screen {
+    fn affordance(&mut self) -> Affordance {
+        self.affordances.generate()
+    }
+
     fn raw_view(&self, xy: ZelPointI) -> Zel {
         if xy.x < 0 || xy.y < 0 || xy.x as u32 >= self.size.width || xy.y as u32 >= self.size.height {
             return Zel::default()

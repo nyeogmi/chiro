@@ -7,5 +7,5 @@ mod window;
 
 pub use shared::{Color, Drawable, Eventable};
 pub use font::Font;
-pub use input::Event;
+pub use input::{Event, Mouse, Keyboard, MouseButton};
 pub use window::Window;
