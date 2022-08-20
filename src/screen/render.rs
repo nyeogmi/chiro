@@ -1,4 +1,4 @@
-use crate::{shared::{ZEL_PIXELS_X, ZEL_PIXELS_Y, Affordance}, color::Color};
+use crate::shared::*;
 
 use super::Zel;
 

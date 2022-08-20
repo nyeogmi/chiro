@@ -7,7 +7,7 @@ use std::collections::VecDeque;
 
 use minifb as mfb;
 
-use crate::{shared::*, color::Color, screen::{PixelFB, Screen, Zel, DirtyRegion}, input::{Event, Input}};
+use crate::{shared::*, screen::{PixelFB, Screen, Zel, DirtyRegion}, input::{Event, Input}};
 
 use self::{type_keyboard::Keyboard, mouse::Mouse, clock::Clock, press_keyboard::PressKeyboard};
 
@@ -36,7 +36,7 @@ pub struct Window {
 const HANDLE_INPUT_EVERY: usize = 4166; // 240 FPS
 
 impl Window {
-    pub fn new(title: String, size: ZelSize, bg: Color, fg: Color) -> Self {
+    pub fn new(title: String, size: impl ToZelSize, bg: impl ToColor, fg: impl ToColor) -> Self {
         Window {
             title,
 

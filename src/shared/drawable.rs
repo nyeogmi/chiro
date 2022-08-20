@@ -29,6 +29,8 @@ pub struct At<'a, D: ?Sized+Drawable> {
 
 enum Modifier<'a> {
     Font(Font),
+    Fg(Color),
+    Bg(Color),
     Arbitrary(&'a dyn Fn(&mut Zel)),
 }
 
@@ -43,7 +45,7 @@ impl<'a, D: ?Sized+Drawable> At<'a, D> {
             if let Some(zel) = self.drawable.raw_at(point2(bx + dx as i32, by + dy as i32)) {
                 zel.tile = tile;
                 for i in self.modifiers.iter() { 
-                    if let Modifier::Arbitrary(a) = i { a(zel) }
+                    i.apply_to(zel)
                 }
             }
         });
@@ -73,6 +75,16 @@ impl<'a, D: ?Sized+Drawable> At<'a, D> {
         self
     }
 
+    pub fn fg(mut self, color: impl ToColor) -> Self {
+        self.modifiers.push(Modifier::Fg(color.to_color()));
+        self
+    }
+
+    pub fn bg(mut self, color: impl ToColor) -> Self {
+        self.modifiers.push(Modifier::Bg(color.to_color()));
+        self
+    }
+
     pub fn push_mod(mut self, modifier: &'a dyn Fn(&mut Zel)) -> Self {
         self.modifiers.push(Modifier::Arbitrary(modifier));
         self
@@ -81,5 +93,16 @@ impl<'a, D: ?Sized+Drawable> At<'a, D> {
     pub fn pop_mod(mut self) -> Self {
         self.modifiers.pop();
         self
+    }
+}
+
+impl<'a> Modifier<'a> {
+    fn apply_to(&self, zel: &mut Zel) {
+        match self {
+            Modifier::Font(_) => {}
+            Modifier::Fg(fg) => zel.fg = *fg,
+            Modifier::Bg(bg) => zel.bg = *bg,
+            Modifier::Arbitrary(f) => f(zel)
+        }
     }
 }

@@ -1,6 +1,6 @@
 use euclid::*;
 
-use crate::{shared::*, tileset::Tile, color::Color};
+use crate::{shared::*, tileset::Tile};
 mod dirtyregion;
 mod render;
 mod pixelfb;
@@ -15,14 +15,15 @@ pub struct Screen {
 }
 
 impl Screen {
-    pub fn new(size: ZelSize, bg: Color, fg: Color) -> Self {
+    pub fn new(size: impl ToZelSize, bg: impl ToColor, fg: impl ToColor) -> Self {
         let zels = vec![];
-        let mut screen = Self { size: size2(0, 0), zels, bg, fg };
+        let mut screen = Self { size: size2(0, 0), zels, bg: bg.to_color(), fg: fg.to_color() };
         screen.resize(size);
         screen
     }
 
-    pub fn resize(&mut self, size: ZelSize) {
+    pub fn resize(&mut self, size: impl ToZelSize) {
+        let size = size.to_zels();
         self.size = size;
         self.zels = vec![Zel::default(); (size.width * size.height) as usize];
     }

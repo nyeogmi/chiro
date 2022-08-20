@@ -1,15 +1,14 @@
 
 use std::{hash::{Hash, Hasher}, collections::hash_map::DefaultHasher};
 
-use chiro::{Window, Color, Drawable, Eventable};
-use euclid::size2;
+use chiro::{Window, Drawable, Eventable};
 
 fn main() {
     let mut win = Window::new(
         "bat party 2".to_string(), 
-        size2(80, 60), 
-        Color::rgb(0, 0, 0),
-        Color::rgb(192, 192, 192),
+        (80, 60), 
+        (0, 0, 0),
+        (192, 192, 192),
     );
 
     let chars: Vec<char> = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()_+-=[]{}|\\;:'\",./<>?                           ".chars().collect();
@@ -27,10 +26,10 @@ fn main() {
                 (i, x, y, 1).hash(&mut h);
                 let hsh_rgb = h.finish();
 
-                let fg = Color::rgb((hsh_rgb & 0xff) as u8, (hsh_rgb >> 8 & 0xff) as u8, (hsh_rgb >> 16 & 0xff) as u8);
-                let bg = Color::rgb((hsh_rgb >> 24 & 0xff) as u8, (hsh_rgb >> 32 & 0xff) as u8, (hsh_rgb >> 40 & 0xff) as u8);
-
-                win.at_i((x, y2)).push_mod(&|z| { z.fg = fg; z.bg = bg; } ).putc(chars[hsh as usize % chars.len()]);
+                win.at_i((x, y2))
+                    .fg((hsh_rgb & 0xffffff) as u32)
+                    .bg(((hsh_rgb >> 24) & 0xffffff) as u32)
+                    .putc(chars[hsh as usize % chars.len()]);
             }
         }
 

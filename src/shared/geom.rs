@@ -22,6 +22,14 @@ pub trait ToZelSize {
     fn to_zels(self) -> ZelSize;
 }
 
+impl ToPixelSize for PixelSize {
+    fn to_pixels(self) -> PixelSize { self }
+}
+
+impl ToZelSize for ZelSize {
+    fn to_zels(self) -> ZelSize { self }
+}
+
 impl ToPixelSize for ZelSize {
     fn to_pixels(self) -> PixelSize { 
         return PixelSize::new(self.width * ZEL_PIXELS_X, self.height * ZEL_PIXELS_Y) 
@@ -31,6 +39,13 @@ impl ToPixelSize for ZelSize {
 impl ToZelSize for PixelSize {
     fn to_zels(self) -> ZelSize { 
         return ZelSize::new(self.width / ZEL_PIXELS_X, self.height / ZEL_PIXELS_Y) 
+    }
+}
+
+// ZelSize alternates for constructors
+impl ToZelSize for (u32, u32) {
+    fn to_zels(self) -> ZelSize {
+        size2(self.0, self.1)
     }
 }
 
