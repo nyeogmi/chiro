@@ -184,16 +184,23 @@ impl Drawable for Window {
 
     fn raw_view(&self, zp: ZelPointI) -> Zel { self.screen.raw_view(zp) }
 
-    fn raw_at(&mut self, zp: ZelPointI) -> Option<&mut Zel> {
-        let zel = self.screen.raw_at(zp);
-        if let Some(_) = zel {
+    fn raw_touch(&mut self, zp: ZelPointI, format: bool, cb: impl FnOnce(&mut Zel)) {
+        self.screen.raw_touch(zp, format, |zel| {
+            cb(zel);
             self.dirty_region.record(zp)
-        }
-        return zel
+        });
     }
 
     fn clear(&mut self) {
         self.screen.clear();
         self.dirty_region.saturate();
+    }
+
+    fn bounds(&mut self) -> ZelRectI {
+        self.screen.bounds()
+    }
+
+    fn get_font(&self) -> crate::Font {
+        self.screen.get_font()
     }
 }

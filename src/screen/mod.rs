@@ -1,6 +1,6 @@
 use euclid::*;
 
-use crate::{shared::*, tileset::Tile};
+use crate::{shared::*, tileset::Tile, Font};
 
 mod affordances;
 mod dirtyregion;
@@ -69,11 +69,19 @@ impl Drawable for Screen {
         return self.zels[(xy.y as u32 * self.size.width + xy.x as u32) as usize]
     }
 
-    fn raw_at(&mut self, xy: ZelPointI) -> Option<&mut Zel> {
+    fn raw_touch(&mut self, xy: ZelPointI, _format: bool, cb: impl FnOnce(&mut Zel)) {
         if xy.x < 0 || xy.y < 0 || xy.x as u32 >= self.size.width || xy.y as u32 >= self.size.height {
-            return None
+            return 
         }
-        return self.zels.get_mut((xy.y as u32 * self.size.width + xy.x as u32) as usize)
+        cb(self.zels.get_mut((xy.y as u32 * self.size.width + xy.x as u32) as usize).expect("if zels is correctly formed, this zel exists"))
+    }
+
+    fn bounds(&mut self) -> ZelRectI {
+        Rect::new(point2(0, 0), size2(self.size.width as i32, self.size.height as i32))
+    }
+
+    fn get_font(&self) -> crate::Font {
+        return Font::Normal
     }
 
     fn clear(&mut self) {

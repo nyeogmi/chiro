@@ -11,6 +11,8 @@ pub type ZelSize = Size2D<u32, ZelSpace>;
 
 pub type ZelPointI = Point2D<i32, ZelSpace>;
 
+pub type ZelRectI = Rect<i32, ZelSpace>;
+
 pub type PixelSize = Size2D<u32, PixelSpace>;
 
 
@@ -57,6 +59,10 @@ pub trait ToZelPointI {
 
 pub trait ToZelPoint {
     fn to_zel(self) -> ZelPoint;
+}
+
+pub trait ToZelRectI {
+    fn to_zelrecti(self) -> ZelRectI;
 }
 
 
