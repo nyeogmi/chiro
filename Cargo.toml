@@ -1,7 +1,7 @@
 [package]
 name = "chiro"
 description = "A curses-style terminal view that runs inside a pixel buffer (Rewrite of chiropterm)"
-version = "0.0.5"
+version = "0.0.6"
 authors = ["Nyeogmi Choi"]
 edition = "2021"
 repository = "https://github.com/nyeogmi/chiro"

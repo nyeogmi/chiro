@@ -48,7 +48,7 @@ fn main() {
     box_art.draw_box((0, 0), (8, 8), false);
     box_art.draw_box((0, 0), (8, 0), true);
     box_art.draw_box((0, 2), (8, 2), true);
-    box_art.draw_box((3, 3), (9,9 ), true);
+    box_art.draw_box((3, 3), (9, 9), true);
     box_art.draw(win.at((40, 0)));
 
 
