@@ -1,3 +1,4 @@
+use crate::ToFChar;
 use crate::{shared::*, screen::Zel, Font};
 use super::At;
 
@@ -48,9 +49,9 @@ pub trait Drawable: Sized {
     }
 
     // drawing
-    fn fill(&mut self, c: char) {
+    fn fill(&mut self, fc: impl ToFChar) {
         let bounds = self.bounds();
-        self.at(bounds.min()).fill_rect(bounds.max(), c);
+        self.at(bounds.min()).fill_rect(bounds.max(), fc);
     }
 
     fn clear(&mut self) {

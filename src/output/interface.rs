@@ -1,9 +1,11 @@
-use std::{slice::Iter, iter::Cloned};
-
 use super::{fchar::FChar, fstring::FString};
 
 
 pub trait Output {
+}
+
+pub trait ToFChar {
+    fn to_fchar(&self) -> FChar;
 }
 
 pub trait ToFString: Sized {
@@ -16,9 +18,25 @@ pub trait ToFString: Sized {
 }
 
 impl<'a> ToFString for &'a FString {
-    type FCharIterator = Cloned<Iter<'a, FChar>>;
+    type FCharIterator = impl DoubleEndedIterator<Item = FChar>;
 
     fn to_fchars(self) -> Self::FCharIterator {
         self.characters.iter().cloned()
     }
+}
+
+impl<'a> ToFString for &'a str {
+    type FCharIterator = impl DoubleEndedIterator<Item = FChar>;
+
+    fn to_fchars(self) -> Self::FCharIterator {
+        self.chars().map(FChar::from)
+    }
+}
+
+impl ToFChar for FChar {
+    fn to_fchar(&self) -> FChar { *self }
+}
+
+impl ToFChar for char {
+    fn to_fchar(&self) -> FChar { FChar::from(*self) }
 }

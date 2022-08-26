@@ -5,4 +5,4 @@ mod wrap;
 
 pub use fchar::FChar;
 pub use fstring::FString;
-pub use interface::{Output, ToFString};
+pub use interface::{Output, ToFString, ToFChar};

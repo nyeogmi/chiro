@@ -1,6 +1,6 @@
 use euclid::*;
 
-use crate::{shared::*, Font};
+use crate::{shared::*, Font, FChar, ToFChar, ToFString};
 
 use super::{sharing::SharedMut, utils::build_rect};
 
@@ -25,10 +25,10 @@ impl<'a, D: Drawable> At<'a, D> {
         At::new(self.0, SharedMut::owned(f(self.1.clone())))
     }
 
-    fn _putc(mut self, font: Font, c: char, clip: Option<ZelRectI>, skip: bool) -> Self {
+    fn _putc(mut self, font: Font, fc: Option<FChar>, clip: Option<ZelRectI>) -> Self {
         let w = font.char_size().width;
 
-        font.char_to_tile(c, |local, tile| {
+        font.char_to_tile(fc.map(|f| f.character).unwrap_or(' '), |local, tile| {
             let (bx, by) = self.0.to_tuple();
             let (dx, dy) = local.to_tuple();
             let point = point2(bx + dx as i32, by + dy as i32);
@@ -37,46 +37,56 @@ impl<'a, D: Drawable> At<'a, D> {
                 if !cl.contains(point) { return; } 
             }
 
-            self.1.borrow(|d| d.raw_touch(point, true,|zel| {
-                if !skip { zel.tile = tile; }
-            }));
+            if let Some(f) = fc {
+                self.1.borrow(|d| d.raw_touch(point, true, |zel| {
+                    zel.tile = tile;
+                }));
+                if f.formatting.makes_changes() {
+                    self.1.borrow(|d| d.raw_touch(point, false, |zel| {
+                        f.formatting.apply(zel)
+                    }));
+                }
+            } else {
+                self.1.borrow(|d| d.raw_touch(point, true, |_| { }));
+            }
         });
+
         self.0.x += w as i32;
         self
     }
 
-    pub fn putc(self, c: char) -> Self {
-        let font = self.1.borrow(|d|d.get_font());
-        self._putc(font, c, None, false)
-    }
-
     pub fn touch(self) -> Self {
         let font = self.1.borrow(|d|d.get_font());
-        self._putc(font, ' ', None, true)
+        self._putc(font, None, None)
     }
 
-    pub fn puts(mut self, s: &str) -> Self {
+    pub fn putc(self, c: impl ToFChar) -> Self {
+        let font = self.1.borrow(|d|d.get_font());
+        self._putc(font, Some(c.to_fchar()), None)
+    }
+
+    pub fn puts(mut self, s: impl ToFString) -> Self {
         let font = self.1.borrow(|d|d.get_font());
 
-        for c in s.chars() {
-            self = self._putc(font, c, None, false)
+        for c in s.to_fchars() {
+            self = self._putc(font, Some(c), None)
         }
         self
     }
 
-    pub fn fill_rect(self, other: impl ToZelPointI, c: char) -> Self {
+    pub fn fill_rect(self, other: impl ToZelPointI, fc: impl ToFChar) -> Self {
         let font = self.1.borrow(|d| d.get_font());
-        self._forall_rect(font, other, |x, clip| x._putc(font, c, Some(clip), false))
+        self._forall_rect(font, other, |x, clip| x._putc(font, Some(fc.to_fchar()), Some(clip)))
     }
 
-    pub fn fill_rect_i(self, other: (i32, i32), c: char) -> Self {
-        self.fill_rect(other, c)
+    pub fn fill_rect_i(self, other: (i32, i32), fc: impl ToFChar) -> Self {
+        self.fill_rect(other, fc)
     }
 
     pub fn touch_rect(self, other: impl ToZelPointI) -> Self {
         // use small font to fill evenly
         let font = Font::Small;
-        self._forall_rect(font, other, |x, clip| x._putc(font, ' ', Some(clip), true))
+        self._forall_rect(font, other, |x, clip| x._putc(font, None, Some(clip)))
     }
 
     pub fn touch_rect_i(self, other: (i32, i32)) -> Self {

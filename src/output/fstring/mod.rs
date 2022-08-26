@@ -1,3 +1,5 @@
+mod formatting;
+
 use std::{ops::Add, fmt::Display};
 
 use super::{fchar::FChar, interface::ToFString};
@@ -5,6 +7,12 @@ use super::{fchar::FChar, interface::ToFString};
 #[derive(Clone, Default)]
 pub struct FString {
     pub(super) characters: Vec<FChar>,
+}
+
+impl From<&str> for FString {
+    fn from(string: &str) -> Self {
+        FString { characters: string.chars().map(FChar::from).collect()}
+    }
 }
 
 impl FString {
@@ -76,19 +84,20 @@ impl FString {
     }
     */
 
-    pub fn map_fchars(&self, mut f: impl FnMut(FChar) -> FChar) -> FString {
-        FString { characters: self.characters.iter().map(|x| f(*x)).collect() }
+    pub fn map_fchars(mut self, mut f: impl FnMut(FChar) -> FChar) -> FString {
+        for i in self.characters.iter_mut() { *i = f(*i); }
+        self
     }
 
-    pub fn map_chars(&self, mut f: impl FnMut(char) -> char) -> FString {
+    pub fn map_chars(self, mut f: impl FnMut(char) -> char) -> FString {
         self.map_fchars(|mut fc| { fc.character = f(fc.character); fc } )
     }
     // TODO: impl trim() if needed
-    pub fn to_ascii_lowercase(&self) -> FString {
+    pub fn to_ascii_lowercase(self) -> FString {
         self.map_chars(|x| x.to_ascii_lowercase())
     }
 
-    pub fn to_ascii_uppercase(&self) -> FString {
+    pub fn to_ascii_uppercase(self) -> FString {
         self.map_chars(|x| x.to_ascii_uppercase())
     }
 
