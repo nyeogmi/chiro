@@ -2,7 +2,7 @@ mod formatting;
 
 use std::{ops::Add, fmt::Display};
 
-use super::{fchar::FChar, interface::ToFString};
+use super::{fchar::{FChar, FCharDraw}, interface::ToFString};
 
 #[derive(Clone, Default)]
 pub struct FString {
@@ -89,12 +89,19 @@ impl FString {
         self
     }
 
+    pub fn map_fchars_draw(mut self, mut f: impl FnMut(FCharDraw) -> FCharDraw) -> FString {
+        for i in self.characters.iter_mut() { 
+            if let FChar::Draw(fcd) = i {
+                *fcd = f(*fcd)
+            }
+        }
+        self
+    }
+
     pub fn map_chars(self, mut f: impl FnMut(char) -> char) -> FString {
-        self.map_fchars(|mut fc| { 
-            if let Some(ch) = fc.character.as_mut() {
-                *ch = f(*ch)
-            };
-            fc
+        self.map_fchars_draw(|mut fcd| { 
+            fcd.character = f(fcd.character);
+            fcd
         })
     }
     // TODO: impl trim() if needed
@@ -111,7 +118,7 @@ impl FString {
     }
 }
 
-impl Add for FString {
+impl Add<FString> for FString {
     type Output = FString;
 
     fn add(self, rhs: Self) -> Self::Output {
@@ -119,9 +126,31 @@ impl Add for FString {
     }
 }
 
+impl Add<FChar> for FString {
+    type Output = FString;
+
+    fn add(self, rhs: FChar) -> Self::Output {
+        self + rhs.to_fstring()
+    }
+}
+
+impl Add<FString> for FChar {
+    type Output = FString;
+
+    fn add(self, rhs: FString) -> Self::Output {
+        self.to_fstring() + rhs
+    }
+}
+
 impl Display for FString {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let simplified = String::from_iter(self.characters.iter().map(|i| i.character.unwrap_or(' ')));
+        let simplified = String::from_iter(self.characters.iter().map(|i| 
+            match i {
+                FChar::Empty => ' ',
+                FChar::Draw(fcd) => fcd.character,
+                FChar::Newline => '\n',
+            }
+        ));
         simplified.fmt(f)
     }
 }

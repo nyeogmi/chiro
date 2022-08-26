@@ -8,8 +8,8 @@ fn main() {
         0xc0c0c0,
     );
 
-    win.at_i((1, 1)).puts("IT'S A BAT PARTY!! WHOA!");
-    win.at_i((1, 3)).font(Font::Small).fg((128, 0, 0)).puts("IT'S A BAT PARTY!! WHOA!");
+    win.at_i((1, 1)).put("IT'S A BAT PARTY!! WHOA!");
+    win.at_i((1, 3)).font(Font::Small).fg((128, 0, 0)).put("IT'S A BAT PARTY!! WHOA!");
 
     loop {
         let evt = win.next_char();

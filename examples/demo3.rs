@@ -12,8 +12,8 @@ fn main() {
     let goodbye = win.affordance();
     let scroll = win.affordance();
 
-    win.at_i((2, 2)).click(hello).scroll(scroll).puts("hello!!");
-    win.at_i((2, 4)).click(goodbye).scroll(scroll).puts("goodbye!!");
+    win.at_i((2, 2)).click(hello).scroll(scroll).put("hello!!");
+    win.at_i((2, 4)).click(goodbye).scroll(scroll).put("goodbye!!");
 
     loop {
         let evt = win.next_tick();

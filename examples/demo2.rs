@@ -29,7 +29,7 @@ fn main() {
                 win.at_i((x, y2))
                     .fg((hsh_rgb & 0xffffff) as u32)
                     .bg(((hsh_rgb >> 24) & 0xffffff) as u32)
-                    .putc(chars[hsh as usize % chars.len()]);
+                    .put(chars[hsh as usize % chars.len()]);
             }
         }
 

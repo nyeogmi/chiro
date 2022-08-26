@@ -1,24 +1,34 @@
 use crate::{shared::Affordance, screen::Zel, Color};
 
-#[derive(Clone, Copy)]
-pub struct FChar {
-    pub character: Option<char>,
+#[derive(Clone, Copy, Debug)]
+pub enum FChar {
+    Empty,
+    Draw(FCharDraw),
+    Newline
+}
+
+#[derive(Clone, Copy, Debug)]
+pub struct FCharDraw {
+    pub character: char,
     pub formatting: Formatting,
 }
 
 impl FChar {
     pub fn empty() -> Self {
-        FChar { character: None, formatting: Formatting::default() }
+        FChar::Empty
     }
 }
 
 impl From<char> for FChar {
     fn from(c: char) -> Self {
-        FChar { character: Some(c), formatting: Formatting::default() }
+        match c {
+            '\n' => FChar::Newline,
+            c => FChar::Draw(FCharDraw {character: c, formatting: Formatting::default() }),
+        }
     }
 }
 
-#[derive(Clone, Copy, Default)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Formatting {
     pub fg: Option<Color>,
     pub bg: Option<Color>,
