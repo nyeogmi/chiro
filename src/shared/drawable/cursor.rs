@@ -21,6 +21,11 @@ impl<'a, D: Drawable> At<'a, D> {
         self.1.clone().at(xy)
     }
 
+    pub fn shift(&self, xy: impl ToZelPointI) -> At<'a, D> {
+        let point = xy.to_zeli();
+        self.1.clone().at((self.0.x + point.x, self.0.y + point.y))
+    }
+
     pub(super) fn _internally<T: Drawable>(&self, f: impl Fn(SharedMut<'a, D>) -> T) -> At<'a, T> {
         At::new(self.0, SharedMut::owned(f(self.1.clone())))
     }

@@ -17,6 +17,14 @@ pub trait ToFString: Sized {
     }
 }
 
+impl ToFString for FString {
+    type FCharIterator = impl DoubleEndedIterator<Item = FChar>;
+
+    fn to_fchars(self) -> Self::FCharIterator {
+        self.characters.into_iter()
+    }
+}
+
 impl<'a> ToFString for &'a FString {
     type FCharIterator = impl DoubleEndedIterator<Item = FChar>;
 
