@@ -61,11 +61,6 @@ pub trait ToZelPoint {
     fn to_zel(self) -> ZelPoint;
 }
 
-pub trait ToZelRectI {
-    fn to_zelrecti(self) -> ZelRectI;
-}
-
-
 // == convert the 3 signed point representations to ZelPointI ==
 impl ToZelPointI for ZelPointI {
     fn to_zeli(self) -> ZelPointI { self }

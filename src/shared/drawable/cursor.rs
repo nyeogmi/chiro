@@ -2,7 +2,7 @@ use euclid::*;
 
 use crate::{shared::*, Font, FChar, ToFChar, ToFString};
 
-use super::{sharing::SharedMut, utils::build_rect};
+use super::sharing::SharedMut;
 
 #[derive(Clone)]
 pub struct At<'d, D: Drawable>{
@@ -18,11 +18,18 @@ impl<'d, D: Drawable> At<'d, D> {
 }
 
 impl<'a, D: Drawable> At<'a, D> {
+    // == reexports from drawable == 
+    pub fn affordance(&mut self) -> Affordance { self.drawable.borrow(|d| d.affordance()) }
+    pub fn get_font(&self) -> Font { self.drawable.borrow(|d| d.get_font()) }
+
+
+    // == cursor stuff ==
     pub fn at(&self, xy: impl ToZelPointI) -> At<'a, D> {
         self.drawable.clone().at(xy)
     }
 
-    pub fn shift(&self, xy: impl ToZelPointI) -> At<'a, D> {
+
+    pub fn shifted(&self, xy: impl ToZelPointI) -> At<'a, D> {
         let point = xy.to_zeli();
         At {
             start: self.start,
@@ -32,9 +39,9 @@ impl<'a, D: Drawable> At<'a, D> {
     }
 
     pub fn at_i(&self, xy: (i32, i32)) -> At<'a, D> { self.at(xy) }
-    pub fn shift_i(&self, xy: (i32, i32)) -> At<'a, D> { self.shift(xy) }
+    pub fn shifted_i(&self, xy: (i32, i32)) -> At<'a, D> { self.shifted(xy) }
 
-    pub(super) fn _internally<T: Drawable>(&self, f: impl Fn(SharedMut<'a, D>) -> T) -> At<'a, T> {
+    pub(super) fn _internally<T: Drawable+'a>(&self, f: impl Fn(SharedMut<'a, D>) -> T) -> At<'a, T> {
         At { start: self.start, position: self.position, drawable: SharedMut::owned(f(self.drawable.clone())) }
     }
 

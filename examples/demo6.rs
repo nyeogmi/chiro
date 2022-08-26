@@ -1,4 +1,3 @@
-
 use chiro::{Window, Drawable, Eventable, ToFString};
 
 fn main() {

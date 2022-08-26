@@ -13,6 +13,12 @@ lazy_static! {
         assert_eq!(m.len(), 256);
         m
     };
+
+    static ref FROM_CP437: Vec<char> = {
+        let m: Vec<char> = std::str::from_utf8(UTF8_DATA).unwrap().chars().collect();
+        assert_eq!(m.len(), 256);
+        m
+    };
 }
 
 pub(crate) fn encode_lossy(c: char) -> u8 {
@@ -20,4 +26,8 @@ pub(crate) fn encode_lossy(c: char) -> u8 {
         return *x;
     }
     return b'?'
+}
+
+pub(crate) fn decode_cp437(u: u8) -> char {
+    FROM_CP437[u as usize]
 }

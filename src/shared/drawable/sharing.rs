@@ -2,7 +2,7 @@ use crate::shared::*;
 
 use std::{rc::Rc, cell::{RefCell, RefMut}, borrow::BorrowMut, mem};
 
-pub(super) struct SharedMut<'d, D: Drawable>(RefCell<Backing<'d, D>>);
+pub(super) struct SharedMut<'d, D: Drawable+'d>(RefCell<Backing<'d, D>>);
 
 enum Backing<'d, D: Drawable> {
     Single(&'d mut D),

@@ -1,4 +1,4 @@
-use crate::{shared::{drawable::{sharing::SharedMut, utils::build_rect}}, Drawable};
+use crate::{shared::drawable::sharing::SharedMut, Drawable};
 use super::*;
 
 impl<'d, D: Drawable> SharedMut<'d, D> {
