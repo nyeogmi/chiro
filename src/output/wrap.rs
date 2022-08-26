@@ -38,7 +38,7 @@ impl FString {
         for i in self.characters.iter() { string.push(to_output_placeholder(*i)) }
 
         // NOTE: This is not a fast implementation at all!!!!!
-        let wrapped: Vec<char> = textwrap::fill(&string, textwrap::Options {
+        let new: Vec<char> = textwrap::fill(&string, textwrap::Options {
             break_words: true,
             width,
             initial_indent: "",
@@ -48,48 +48,47 @@ impl FString {
             word_splitter: textwrap::WordSplitter::NoHyphenation,
         }).chars().collect();
 
-        let mut orig_i = 0;
-        let mut wrapped_i = 0;
+        let mut old_i = 0;
+        let mut new_i = 0;
         let mut results: Vec<FChar> = vec![];
         let mut current_formatting = Formatting::default();
 
         loop {
-            match (self.characters.get(orig_i), wrapped.get(wrapped_i)) {
-                (Some(orig), Some(new)) => {
-                    update_formatting(&mut current_formatting, *orig);
-                    if new.is_whitespace() {
-                        if to_output_placeholder(*orig).is_whitespace() {
-                            orig_i += 1;
-                        } else {
-                            results.push(from_output_placeholder(*new, current_formatting));
-                            wrapped_i += 1;
-                        }
-                    } else if approximate_match(to_output_placeholder(*orig), *new) {
+            match (self.characters.get(old_i), new.get(new_i)) {
+                (Some(old), Some(new)) => {
+                    update_formatting(&mut current_formatting, *old);
+
+                    let new_ws = new.is_whitespace();
+                    let old_ws = to_output_placeholder(*old).is_whitespace();
+
+                    if new_ws && old_ws {
                         results.push(from_output_placeholder(*new, current_formatting));
-                        orig_i += 1;
-                        wrapped_i += 1;
+                        old_i += 1;
+                        new_i += 1;
+                    } else if new_ws {
+                        results.push(from_output_placeholder(*new, current_formatting));
+                        new_i += 1;
+                    } else if old_ws {
+                        old_i += 1;
                     } else {
-                        panic!("wtf: {:?} {:?}", *orig, new)
+                        results.push(from_output_placeholder(*new, current_formatting));
+                        old_i += 1;
+                        new_i += 1;
                     }
                 }
-                (None, None) => { break; }
                 (None, Some(new)) => {
                     results.push(from_output_placeholder(*new, current_formatting));
-                    wrapped_i += 1;
+                    new_i += 1;
                 }
                 (Some(old), None) => {
+                    update_formatting(&mut current_formatting, *old);
                     results.push(*old);
-                    orig_i += 1;
+                    old_i += 1;
                 }
+                (None, None) => { break; }
             }
         }
 
         FString { characters: results }
     }
-}
-
-fn approximate_match(orig: char, new: char) -> bool {
-    if orig == new { return true }
-    if orig.is_whitespace() && new.is_whitespace() { return true }
-    return false
 }

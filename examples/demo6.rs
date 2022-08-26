@@ -9,12 +9,16 @@ fn main() {
         0xc0c0c0,
     );
 
+    let para1 = "It would seem that those functions appear to be corrupted as well. Run Vigil again and it will take care of that for you. Several invocations may be required to fully excise all bugs from your code.".to_fstring().fg(0xffff00);
+    let para2 = "
+ Look out for bats...  
+    AAAAAAAAAAAAAAAAAAAAAA
+
+Also, hi!".to_fstring().bg(0x00ff00).fg(0x000000);
+   
+
     win.at_i((2, 2)).put(
-        "It would seem that those functions appear to be corrupted as well. Run Vigil again and it will take care of that for you. Several invocations may be required to fully excise all bugs from your code.
-
-        Look out for bats...
-
-Also, hi!".to_fstring().wrap(76)
+        (para1 + "\n".to_fstring() + para2).wrap(76)
     );
 
     while let Some(_) = win.next_char() { }
