@@ -1,7 +1,7 @@
-use crate::{shared::drawable::sharing::SharedMut, Drawable};
+use crate::{shared::Shared, Drawable};
 use super::*;
 
-impl<'d, D: Drawable> SharedMut<'d, D> {
+impl<'d, D: Drawable> Shared<'d, D> {
     // == modifiers etc ==
     // get a cursor
     pub fn at(self, xy: impl ToZel) -> At<'d, D> {

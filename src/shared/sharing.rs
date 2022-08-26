@@ -2,7 +2,7 @@ use crate::shared::*;
 
 use std::{rc::Rc, cell::{RefCell, RefMut}, borrow::BorrowMut, mem};
 
-pub(super) struct SharedMut<'d, D: Drawable+'d>(RefCell<Backing<'d, D>>);
+pub(crate) struct Shared<'d, D: Drawable+'d>(RefCell<Backing<'d, D>>);
 
 enum Backing<'d, D: Drawable> {
     Single(&'d mut D),
@@ -11,7 +11,7 @@ enum Backing<'d, D: Drawable> {
     Poisoned,
 }
 
-impl<'d, D: Drawable> Clone for SharedMut<'d, D> {
+impl<'d, D: Drawable> Clone for Shared<'d, D> {
     fn clone(&self) -> Self {
         let out = {
             let mut here: RefMut<Backing<'d, D>> = self.0.borrow_mut();
@@ -19,7 +19,7 @@ impl<'d, D: Drawable> Clone for SharedMut<'d, D> {
             mem::swap(&mut *here, &mut poison);
             let (mut l, r) = poison.split();
             mem::swap(&mut *here, &mut l);
-            SharedMut(RefCell::new(r))
+            Shared(RefCell::new(r))
         };
         assert!(!self.0.borrow().poisoned());
         assert!(!out.0.borrow().poisoned());
@@ -52,16 +52,16 @@ impl<'d, D: Drawable> Backing<'d, D> {
     }
 }
 
-impl<'d, D: Drawable> SharedMut<'d, D> {
-    pub(super) fn wrap(arg: &'d mut D) -> Self {
-        return SharedMut(RefCell::new(Backing::Single(arg)))
+impl<'d, D: Drawable> Shared<'d, D> {
+    pub fn wrap(arg: &'d mut D) -> Self {
+        return Shared(RefCell::new(Backing::Single(arg)))
     }
 
-    pub(super) fn owned(arg: D) -> Self {
-        return SharedMut(RefCell::new(Backing::Owned(Rc::new(RefCell::new(arg)))))
+    pub fn owned(arg: D) -> Self {
+        return Shared(RefCell::new(Backing::Owned(Rc::new(RefCell::new(arg)))))
     }
 
-    pub(super) fn borrow<T>(&self, f: impl FnOnce(&mut D) -> T) -> T {
+    pub fn borrow<T>(&self, f: impl FnOnce(&mut D) -> T) -> T {
         let mut x: RefMut<Backing<'d, D>> = self.0.borrow_mut();
         match &mut *x {
             Backing::Single(x) => f(x),

@@ -1,6 +1,7 @@
 #![feature(type_alias_impl_trait)]
 
 mod boxart;
+pub mod modifiers;
 mod shared;
 mod font;
 mod input;
@@ -24,8 +25,4 @@ pub mod structures {
 pub mod pub_internals {
     // internals that you might still have some reason to want
     pub use super::screen::{DirtyRegion, PixelFB, Screen};
-}
-
-pub mod modifiers {
-    pub use super::shared::{Offset, Clip, SetFont, SetFg, SetBg, SetClick, SetScroll};
 }

@@ -2,17 +2,15 @@ use euclid::*;
 
 use crate::{shared::*, Font, FChar, ToFChar, ToFString, boxart::{draw_box, BoxSettings}};
 
-use super::sharing::SharedMut;
-
 #[derive(Clone)]
 pub struct At<'d, D: Drawable>{
     start: Zel,
     position: Zel, 
-    drawable: SharedMut<'d, D>
+    drawable: Shared<'d, D>
 }
 
 impl<'d, D: Drawable> At<'d, D> {
-    pub(super) fn new(start: Zel, drawable: SharedMut<'d, D>) -> At<'d, D> {
+    pub(crate) fn new(start: Zel, drawable: Shared<'d, D>) -> At<'d, D> {
         At { start, position: start, drawable }
     }
 }
@@ -41,8 +39,8 @@ impl<'a, D: Drawable> At<'a, D> {
     pub fn at_i(&self, xy: (i32, i32)) -> At<'a, D> { self.at(xy) }
     pub fn shifted_i(&self, xy: (i32, i32)) -> At<'a, D> { self.shifted(xy) }
 
-    pub(super) fn _internally<T: Drawable+'a>(&self, f: impl Fn(SharedMut<'a, D>) -> T) -> At<'a, T> {
-        At { start: self.start, position: self.position, drawable: SharedMut::owned(f(self.drawable.clone())) }
+    pub(crate) fn _internally<T: Drawable+'a>(&self, f: impl Fn(Shared<'a, D>) -> T) -> At<'a, T> {
+        At { start: self.start, position: self.position, drawable: Shared::owned(f(self.drawable.clone())) }
     }
 
     fn _putc(mut self, font: Font, fc: FChar, clip: Option<ZelRect>) -> Self {
