@@ -68,5 +68,3 @@ impl Font {
         }
     }
 }
-
-pub(crate) use cp437::decode_cp437;
