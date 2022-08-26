@@ -1,6 +1,6 @@
 use euclid::*;
 
-use crate::{shared::*, Font, FChar, ToFChar, ToFString, boxart::{draw_box, Settings}};
+use crate::{shared::*, Font, FChar, ToFChar, ToFString, boxart::{draw_box, BoxSettings}};
 
 use super::sharing::SharedMut;
 
@@ -106,10 +106,10 @@ impl<'a, D: Drawable> At<'a, D> {
     }
 
     pub fn draw_rect(self, other: impl ToZelPointI) -> Self {
-        self.draw_rect_ext(other, Settings::default())
+        self.draw_rect_ext(other, BoxSettings::default())
     }
 
-    pub fn draw_rect_ext(self, other: impl ToZelPointI, settings: Settings) -> Self {
+    pub fn draw_rect_ext(self, other: impl ToZelPointI, settings: BoxSettings) -> Self {
         let (mut x1, mut y1) = other.to_zeli().to_tuple();
         x1 -= self.position.x;
         y1 -= self.position.y;

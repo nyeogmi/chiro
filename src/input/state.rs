@@ -88,7 +88,7 @@ pub struct Mouse {
     click_selection: Option<Affordance>,
     scroll_selection: Option<Affordance>,
 
-    position: ZelPoint,
+    position: ZelPointI,
     scroll: f32,
 
     is_down: EnumMap<MouseButton, bool>,
@@ -162,7 +162,7 @@ impl Mouse {
 }
 
 pub struct Drag {
-    pub start: ZelPoint,
-    pub last: ZelPoint,
-    pub now: ZelPoint,
+    pub start: ZelPointI,
+    pub last: ZelPointI,
+    pub now: ZelPointI,
 }

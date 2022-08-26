@@ -1,4 +1,4 @@
-use chiro::{Window, Drawable, Eventable, BoxArt, Font, Settings};
+use chiro::{Window, Drawable, Eventable, BoxArt, Font, BoxSettings};
 
 fn main() {
     let mut win = Window::new(
@@ -52,9 +52,9 @@ fn main() {
     box_art.draw(win.at((40, 0)));
 
     win.at((37, 36)).draw_rect((37, 48));
-    win.at((38, 36)).draw_rect_ext((40, 48), Settings::double());
+    win.at((38, 36)).draw_rect_ext((40, 48), BoxSettings::double());
     win.at((40, 36)).draw_rect((64, 36));
-    win.at((40, 38)).draw_rect_ext((64, 46), Settings::single().double_right());
+    win.at((40, 38)).draw_rect_ext((64, 46), BoxSettings::single().double_right());
     win.at((40, 40)).draw_rect((60, 48));
 
     while let Some(_) = win.next_char() { }

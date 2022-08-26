@@ -10,4 +10,4 @@ pub enum BoxSide {
 pub use complex::BoxArt;
 use enum_map::Enum;
 pub(crate) use simple::draw_box;
-pub use simple::{Border, Settings};
+pub use simple::{Border, BoxSettings};

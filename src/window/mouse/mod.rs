@@ -10,7 +10,7 @@ use minifb::{MouseButton as MinifbMouseButton, MouseMode, Window};
 
 use self::{scroll_wheel::ScrollWheelMonitor, wiggle::WiggleMonitor};
 
-use crate::{input::{MouseEvent, MouseButton}, shared::{ZelPoint, Affordance, ZelSize}, screen::Zel};
+use crate::{input::{MouseEvent, MouseButton}, shared::{ZelPointI, Affordance, ZelSize}, screen::Zel};
 
 use drag::DragMonitor;
 
@@ -30,7 +30,7 @@ pub(crate) struct Mouse {
 struct State {
     down: EnumMap<MouseButton, bool>,
 
-    zel: ZelPoint,
+    zel: ZelPointI,
     click_selection: Option<Affordance>,
     scroll_selection: Option<Affordance>,
 }
@@ -55,7 +55,7 @@ impl Mouse {
     }
 
     // any_interactor: (normal, scroll)
-    pub fn update(&mut self, size: ZelSize, window: &mut Window, new_tick: bool, get_zel: impl Fn(ZelPoint) -> Zel) {
+    pub fn update(&mut self, size: ZelSize, window: &mut Window, new_tick: bool, get_zel: impl Fn(ZelPointI) -> Zel) {
         let current_state = Mouse::current_state(size, window, &get_zel);
 
         if let None = current_state {
@@ -111,7 +111,7 @@ impl Mouse {
     }
 
     // normal interactor, scroll interactor
-    fn current_state(size: ZelSize, window: &mut Window, get_zel: &impl Fn(ZelPoint) -> Zel) -> Option<State> {
+    fn current_state(size: ZelSize, window: &mut Window, get_zel: &impl Fn(ZelPointI) -> Zel) -> Option<State> {
         // NYEO NOTE: The logic in minifb to compensate for DPI scaling is wrong.
         // This logic is correct, however.
         let mouse_pos = if let Some(mp) = window.get_unscaled_mouse_pos(MouseMode::Pass) { 
@@ -121,19 +121,15 @@ impl Mouse {
         let mouse_x_ideal = ((mouse_pos.0 / overall_size.0 as f32) * size.width as f32) as i32;
         let mouse_y_ideal = ((mouse_pos.1 / overall_size.1 as f32) * size.height as f32) as i32;
 
-        let zel_xy: ZelPoint;
+        let zel_xy: ZelPointI = point2(mouse_x_ideal as i32, mouse_y_ideal as i32);
         let click_selection: Option<Affordance>;
         let scroll_selection: Option<Affordance>;
+
         if mouse_x_ideal >= 0 && mouse_y_ideal >= 0 && mouse_x_ideal < size.width as i32 && mouse_y_ideal < size.height as i32 {
-            zel_xy = point2(mouse_x_ideal as u32, mouse_y_ideal as u32);
             let zel = get_zel(zel_xy);
             click_selection = zel.click;
             scroll_selection = zel.scroll;
         } else {
-            zel_xy = point2(
-                mouse_x_ideal.min(size.width as i32 - 1).max(0) as u32, 
-                mouse_y_ideal.min(size.height as i32 - 1).max(0) as u32
-            );
             click_selection = None;
             scroll_selection = None;
         }

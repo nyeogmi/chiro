@@ -8,7 +8,7 @@ use super::{BoxSide, charset::box_char};
 pub enum Border { Single, Double, }
 
 #[derive(Clone, Copy, Default)]
-pub struct Settings {
+pub struct BoxSettings {
     borders: EnumMap<BoxSide, Border>
 } 
 
@@ -16,13 +16,13 @@ impl Default for Border {
     fn default() -> Self { Border::Single }
 }
 
-impl Settings {
-    pub fn single() -> Settings {
-        Settings::default()
+impl BoxSettings {
+    pub fn single() -> BoxSettings {
+        BoxSettings::default()
     }
 
-    pub fn double() -> Settings {
-        let mut settings = Settings::default();
+    pub fn double() -> BoxSettings {
+        let mut settings = BoxSettings::default();
 
         settings.borders[BoxSide::Up] = Border::Double;
         settings.borders[BoxSide::Down] = Border::Double;
@@ -32,19 +32,19 @@ impl Settings {
         settings
     }
 
-    pub fn double_top(mut self) -> Settings { self.borders[BoxSide::Up] = Border::Double; self }
-    pub fn double_bottom(mut self) -> Settings { self.borders[BoxSide::Down] = Border::Double; self }
-    pub fn double_left(mut self) -> Settings { self.borders[BoxSide::Left] = Border::Double; self }
-    pub fn double_right(mut self) -> Settings { self.borders[BoxSide::Right] = Border::Double; self }
+    pub fn double_top(mut self) -> BoxSettings { self.borders[BoxSide::Up] = Border::Double; self }
+    pub fn double_bottom(mut self) -> BoxSettings { self.borders[BoxSide::Down] = Border::Double; self }
+    pub fn double_left(mut self) -> BoxSettings { self.borders[BoxSide::Left] = Border::Double; self }
+    pub fn double_right(mut self) -> BoxSettings { self.borders[BoxSide::Right] = Border::Double; self }
 
-    pub fn single_top(mut self) -> Settings { self.borders[BoxSide::Up] = Border::Single; self }
-    pub fn single_bottom(mut self) -> Settings { self.borders[BoxSide::Down] = Border::Single; self }
-    pub fn single_left(mut self) -> Settings { self.borders[BoxSide::Left] = Border::Single; self }
-    pub fn single_right(mut self) -> Settings { self.borders[BoxSide::Right] = Border::Single; self }
+    pub fn single_top(mut self) -> BoxSettings { self.borders[BoxSide::Up] = Border::Single; self }
+    pub fn single_bottom(mut self) -> BoxSettings { self.borders[BoxSide::Down] = Border::Single; self }
+    pub fn single_left(mut self) -> BoxSettings { self.borders[BoxSide::Left] = Border::Single; self }
+    pub fn single_right(mut self) -> BoxSettings { self.borders[BoxSide::Right] = Border::Single; self }
 }
 
 
-pub(crate) fn draw_box(cursor: &At<impl Drawable>, top: impl ToZelPointI, bot: impl ToZelPointI, settings: Settings) {
+pub(crate) fn draw_box(cursor: &At<impl Drawable>, top: impl ToZelPointI, bot: impl ToZelPointI, settings: BoxSettings) {
     let font = cursor.get_font();
     let sz = font.char_size();
     let sz_x = sz.width as i32;

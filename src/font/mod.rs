@@ -42,7 +42,7 @@ impl Font {
         }
     }
 
-    pub(crate) fn char_to_tile(&self, c: char, mut cb: impl FnMut(ZelPoint, Tile)) {
+    pub(crate) fn char_to_tile(&self, c: char, mut cb: impl FnMut(ZelPointI, Tile)) {
         let ix = cp437::encode_lossy(c) as u32;
 
         match self {

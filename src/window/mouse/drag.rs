@@ -12,14 +12,14 @@ pub struct DragMonitor {
 
 #[derive(Clone, Copy)]
 struct ToSend {
-    start: ZelPoint,
-    last: ZelPoint,
-    now: ZelPoint,
+    start: ZelPointI,
+    last: ZelPointI,
+    now: ZelPointI,
 }
 
 #[derive(Clone, Copy)]
 pub struct State {
-    point: ZelPoint,
+    point: ZelPointI,
 }
 
 impl DragMonitor {
@@ -31,14 +31,14 @@ impl DragMonitor {
         }
     }
 
-    pub(crate) fn down(&mut self, point: ZelPoint) {
+    pub(crate) fn down(&mut self, point: ZelPointI) {
         self.start = Some(State { point });
         self.old = self.start
     }
 
     pub(crate) fn at(
         &mut self, 
-        point: ZelPoint, 
+        point: ZelPointI, 
     ) {
         if self.start.is_none() { return; }
         let start = self.start.unwrap();
@@ -59,7 +59,7 @@ impl DragMonitor {
         &mut self,
         events: &mut VecDeque<crate::input::MouseEvent>, 
         mouse_button: MouseButton,
-        get_zel: &impl Fn(ZelPoint) -> Zel,
+        get_zel: &impl Fn(ZelPointI) -> Zel,
     ) {
         if let Some(ToSend { start, last, now }) = self.event_to_send.take() {
             let zel = get_zel(now);
@@ -79,7 +79,7 @@ impl DragMonitor {
         &mut self,
         events: &mut VecDeque<crate::input::MouseEvent>,
         mouse_button: MouseButton,
-        get_zel: &impl Fn(ZelPoint) -> Zel,
+        get_zel: &impl Fn(ZelPointI) -> Zel,
     ) {
         self.post_events(events, mouse_button, get_zel);
 

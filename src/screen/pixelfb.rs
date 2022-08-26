@@ -17,7 +17,7 @@ impl PixelFB {
     }
 
     // true if work was done
-    pub(crate) fn draw(&mut self, new: &Screen, new_selection: Option<Affordance>, dirty_cells: Option<&[ZelPoint]>) -> bool {
+    pub(crate) fn draw(&mut self, new: &Screen, new_selection: Option<Affordance>, dirty_cells: Option<&[(u32, u32)]>) -> bool {
         let new_px_size = new.size.to_pixels();
         let new_buf_sz = (new_px_size.width * new_px_size.height) as usize;
 
@@ -54,7 +54,7 @@ impl PixelFB {
         result
     }
 
-    fn draw_differences(old: &Screen, old_selection: Option<Affordance>, new: &Screen, new_selection: Option<Affordance>, buffer: &mut Vec<u32>, dirty_cells: Option<&[ZelPoint]>) -> bool {
+    fn draw_differences(old: &Screen, old_selection: Option<Affordance>, new: &Screen, new_selection: Option<Affordance>, buffer: &mut Vec<u32>, dirty_cells: Option<&[(u32, u32)]>) -> bool {
         let size = new.size;
         let w = size.width;
         let h = size.height;
@@ -78,7 +78,7 @@ impl PixelFB {
         };
 
         if let Some(dc) = dirty_cells {
-            for c in dc { cb(c.x, c.y) }
+            for c in dc { cb(c.0, c.1) }
         } else {
             for y in 0..h {
                 for x in 0..w {

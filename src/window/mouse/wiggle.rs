@@ -10,13 +10,13 @@ pub struct WiggleMonitor {
 
 #[derive(Clone, Copy)]
 struct ToSend {
-    last: ZelPoint,
-    now: ZelPoint,
+    last: ZelPointI,
+    now: ZelPointI,
 }
 
 #[derive(Clone, Copy)]
 pub struct State {
-    point: ZelPoint,
+    point: ZelPointI,
 }
 
 impl WiggleMonitor {
@@ -29,7 +29,7 @@ impl WiggleMonitor {
 
     pub(crate) fn at(
         &mut self, 
-        point: ZelPoint, 
+        point: ZelPointI, 
     ) {
         let new = State { point };
         let old = self.old.take();
@@ -48,7 +48,7 @@ impl WiggleMonitor {
     pub(crate) fn post_events(
         &mut self,
         events: &mut VecDeque<crate::input::MouseEvent>, 
-        get_zel: &impl Fn(ZelPoint) -> Zel,
+        get_zel: &impl Fn(ZelPointI) -> Zel,
     ) {
         if let Some(ToSend { last, now }) = self.event_to_send.take() {
             let zel = get_zel(now);
