@@ -90,7 +90,12 @@ impl FString {
     }
 
     pub fn map_chars(self, mut f: impl FnMut(char) -> char) -> FString {
-        self.map_fchars(|mut fc| { fc.character = f(fc.character); fc } )
+        self.map_fchars(|mut fc| { 
+            if let Some(ch) = fc.character.as_mut() {
+                *ch = f(*ch)
+            };
+            fc
+        })
     }
     // TODO: impl trim() if needed
     pub fn to_ascii_lowercase(self) -> FString {
@@ -116,7 +121,7 @@ impl Add for FString {
 
 impl Display for FString {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let simplified = String::from_iter(self.characters.iter().map(|i| i.character));
+        let simplified = String::from_iter(self.characters.iter().map(|i| i.character.unwrap_or(' ')));
         simplified.fmt(f)
     }
 }

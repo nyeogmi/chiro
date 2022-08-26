@@ -2,13 +2,19 @@ use crate::{shared::Affordance, screen::Zel, Color};
 
 #[derive(Clone, Copy)]
 pub struct FChar {
-    pub character: char,
+    pub character: Option<char>,
     pub formatting: Formatting,
+}
+
+impl FChar {
+    pub fn empty() -> Self {
+        FChar { character: None, formatting: Formatting::default() }
+    }
 }
 
 impl From<char> for FChar {
     fn from(c: char) -> Self {
-        FChar { character: c, formatting: Formatting::default() }
+        FChar { character: Some(c), formatting: Formatting::default() }
     }
 }
 

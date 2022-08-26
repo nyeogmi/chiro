@@ -48,3 +48,21 @@ impl ToFChar for FChar {
 impl ToFChar for char {
     fn to_fchar(&self) -> FChar { FChar::from(*self) }
 }
+
+
+// ToFString for char-ish things
+impl ToFString for FChar {
+    type FCharIterator = impl DoubleEndedIterator<Item = FChar>;
+
+    fn to_fchars(self) -> Self::FCharIterator {
+        [self].into_iter()
+    }
+}
+
+impl ToFString for char {
+    type FCharIterator = impl DoubleEndedIterator<Item = FChar>;
+
+    fn to_fchars(self) -> Self::FCharIterator {
+        [FChar::from(self)].into_iter()
+    }
+}
