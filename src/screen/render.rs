@@ -1,14 +1,14 @@
 use crate::shared::*;
 
-use super::Zel;
+use super::ZelData;
 
-impl Zel {
+impl ZelData {
     pub(crate) fn adapted_for(
         mut self,
         window_bg: Color, 
         window_fg: Color,
         click_selection: Option<Affordance>
-    ) -> Zel {
+    ) -> ZelData {
         self.fg = if self.fg.is_opaque() { self.fg } else { window_fg };
         self.bg = if self.bg.is_opaque() { self.bg } else { window_bg };
 

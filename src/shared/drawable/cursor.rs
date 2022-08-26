@@ -6,13 +6,13 @@ use super::sharing::SharedMut;
 
 #[derive(Clone)]
 pub struct At<'d, D: Drawable>{
-    start: ZelPointI,
-    position: ZelPointI, 
+    start: Zel,
+    position: Zel, 
     drawable: SharedMut<'d, D>
 }
 
 impl<'d, D: Drawable> At<'d, D> {
-    pub(super) fn new(start: ZelPointI, drawable: SharedMut<'d, D>) -> At<'d, D> {
+    pub(super) fn new(start: Zel, drawable: SharedMut<'d, D>) -> At<'d, D> {
         At { start, position: start, drawable }
     }
 }
@@ -45,7 +45,7 @@ impl<'a, D: Drawable> At<'a, D> {
         At { start: self.start, position: self.position, drawable: SharedMut::owned(f(self.drawable.clone())) }
     }
 
-    fn _putc(mut self, font: Font, fc: FChar, clip: Option<ZelRectI>) -> Self {
+    fn _putc(mut self, font: Font, fc: FChar, clip: Option<ZelRect>) -> Self {
         let (w, h) = font.char_size().to_tuple();
 
         match fc {
@@ -134,7 +134,7 @@ impl<'a, D: Drawable> At<'a, D> {
         self.touch_rect(other)
     }
 
-    fn _forall_rect(mut self, font: Font, other: impl ToZelPointI, mut cb: impl FnMut(Self, ZelRectI) -> Self) -> Self {
+    fn _forall_rect(mut self, font: Font, other: impl ToZelPointI, mut cb: impl FnMut(Self, ZelRect) -> Self) -> Self {
         // TODO: clip to avoid exceeding bounds
         let zeli_other = other.to_zeli();
 

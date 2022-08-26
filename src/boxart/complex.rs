@@ -1,12 +1,12 @@
 use std::collections::HashMap;
 
-use crate::{Drawable, shared::{At, ZelPointI, ToZelPointI, build_rect}, Font};
+use crate::{Drawable, shared::{At, Zel, ToZelPointI, build_rect}, Font};
 
 use super::{charset::box_char, BoxSide};
 
 pub struct BoxArt {
     font: Font,
-    content: HashMap<ZelPointI, u8>,
+    content: HashMap<Zel, u8>,
 }
 
 impl BoxArt {

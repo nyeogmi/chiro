@@ -1,7 +1,7 @@
 use crate::shared::*;
 use euclid::*;
 
-pub(crate) fn build_rect(xy1: ZelPointI, xy2: ZelPointI) -> ZelRectI {
+pub(crate) fn build_rect(xy1: Zel, xy2: Zel) -> ZelRect {
     let min_x = xy1.x.min(xy2.x);
     let max_x = xy1.x.max(xy2.x);
 

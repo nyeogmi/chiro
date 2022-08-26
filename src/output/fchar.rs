@@ -1,4 +1,4 @@
-use crate::{shared::Affordance, screen::Zel, Color};
+use crate::{shared::Affordance, screen::ZelData, Color};
 
 #[derive(Clone, Copy, Debug)]
 pub enum FChar {
@@ -40,7 +40,7 @@ impl Formatting {
         self.fg.is_some() || self.bg.is_some() || self.click.is_some() || self.scroll.is_some()
     }
 
-    pub fn apply(&self, zel: &mut Zel) {
+    pub fn apply(&self, zel: &mut ZelData) {
         if let Some(f) = self.fg { zel.fg = f; }
         if let Some(b) = self.bg { zel.bg = b; }
         if let Some(c) = self.click { zel.click = c; }

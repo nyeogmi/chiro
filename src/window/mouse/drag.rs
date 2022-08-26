@@ -1,6 +1,6 @@
 use std::collections::VecDeque;
 
-use crate::{shared::*, screen::Zel};
+use crate::{shared::*, screen::ZelData};
 use super::{MouseButton, MouseEvent};
 
 #[derive(Clone, Copy)]
@@ -12,14 +12,14 @@ pub struct DragMonitor {
 
 #[derive(Clone, Copy)]
 struct ToSend {
-    start: ZelPointI,
-    last: ZelPointI,
-    now: ZelPointI,
+    start: Zel,
+    last: Zel,
+    now: Zel,
 }
 
 #[derive(Clone, Copy)]
 pub struct State {
-    point: ZelPointI,
+    point: Zel,
 }
 
 impl DragMonitor {
@@ -31,14 +31,14 @@ impl DragMonitor {
         }
     }
 
-    pub(crate) fn down(&mut self, point: ZelPointI) {
+    pub(crate) fn down(&mut self, point: Zel) {
         self.start = Some(State { point });
         self.old = self.start
     }
 
     pub(crate) fn at(
         &mut self, 
-        point: ZelPointI, 
+        point: Zel, 
     ) {
         if self.start.is_none() { return; }
         let start = self.start.unwrap();
@@ -59,7 +59,7 @@ impl DragMonitor {
         &mut self,
         events: &mut VecDeque<crate::input::MouseEvent>, 
         mouse_button: MouseButton,
-        get_zel: &impl Fn(ZelPointI) -> Zel,
+        get_zel: &impl Fn(Zel) -> ZelData,
     ) {
         if let Some(ToSend { start, last, now }) = self.event_to_send.take() {
             let zel = get_zel(now);
@@ -79,7 +79,7 @@ impl DragMonitor {
         &mut self,
         events: &mut VecDeque<crate::input::MouseEvent>,
         mouse_button: MouseButton,
-        get_zel: &impl Fn(ZelPointI) -> Zel,
+        get_zel: &impl Fn(Zel) -> ZelData,
     ) {
         self.post_events(events, mouse_button, get_zel);
 

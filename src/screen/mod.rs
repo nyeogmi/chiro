@@ -15,7 +15,7 @@ use self::affordances::Affordances;
 pub struct Screen {
     pub(crate) size: ZelSize,
     pub(crate) affordances: Affordances,
-    pub(crate) zels: Vec<Zel>,
+    pub(crate) zels: Vec<ZelData>,
     pub(crate) bg: Color, pub(crate) fg: Color,
 }
 
@@ -30,7 +30,7 @@ impl Screen {
     pub fn resize(&mut self, size: impl ToZelSize) {
         let size = size.to_zels();
         self.size = size;
-        self.zels = vec![Zel::default(); (size.width * size.height) as usize];
+        self.zels = vec![ZelData::default(); (size.width * size.height) as usize];
     }
 }
 
@@ -49,7 +49,7 @@ impl Clone for Screen {
 }
 
 #[derive(Clone, Copy, Default)]
-pub struct Zel {
+pub struct ZelData {
     pub tile: Tile,
     pub click: Option<Affordance>,
     pub scroll: Option<Affordance>,
@@ -62,21 +62,21 @@ impl Drawable for Screen {
         self.affordances.generate()
     }
 
-    fn raw_view(&self, xy: ZelPointI) -> Zel {
+    fn raw_view(&self, xy: Zel) -> ZelData {
         if xy.x < 0 || xy.y < 0 || xy.x as u32 >= self.size.width || xy.y as u32 >= self.size.height {
-            return Zel::default()
+            return ZelData::default()
         }
         return self.zels[(xy.y as u32 * self.size.width + xy.x as u32) as usize]
     }
 
-    fn raw_touch(&mut self, xy: ZelPointI, _format: bool, cb: impl FnOnce(&mut Zel)) {
+    fn raw_touch(&mut self, xy: Zel, _format: bool, cb: impl FnOnce(&mut ZelData)) {
         if xy.x < 0 || xy.y < 0 || xy.x as u32 >= self.size.width || xy.y as u32 >= self.size.height {
             return 
         }
         cb(self.zels.get_mut((xy.y as u32 * self.size.width + xy.x as u32) as usize).expect("if zels is correctly formed, this zel exists"))
     }
 
-    fn bounds(&mut self) -> ZelRectI {
+    fn bounds(&mut self) -> ZelRect {
         Rect::new(point2(0, 0), size2(self.size.width as i32, self.size.height as i32))
     }
 

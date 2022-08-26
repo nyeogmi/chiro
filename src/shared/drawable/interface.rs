@@ -1,5 +1,5 @@
 use crate::ToFChar;
-use crate::{shared::*, screen::Zel, Font};
+use crate::{shared::*, screen::ZelData, Font};
 use super::At;
 
 use super::sharing::SharedMut;
@@ -8,15 +8,15 @@ pub trait Drawable: Sized {
     fn affordance(&mut self) -> Affordance;
     fn get_font(&self) -> Font;
 
-    fn bounds(&mut self) -> ZelRectI;
-    fn raw_view(&self, zp: ZelPointI) -> Zel;
-    fn raw_touch(&mut self, zp: ZelPointI, format: bool, modify: impl FnOnce(&mut Zel));
+    fn bounds(&mut self) -> ZelRect;
+    fn raw_view(&self, zp: Zel) -> ZelData;
+    fn raw_touch(&mut self, zp: Zel, format: bool, modify: impl FnOnce(&mut ZelData));
 
-    fn view(&self, xy: impl ToZelPointI) -> Zel {
+    fn view(&self, xy: impl ToZelPointI) -> ZelData {
         self.raw_view(xy.to_zeli())
     }
 
-    fn view_i(&self, xy: (i32, i32)) -> Zel { self.view(xy) }
+    fn view_i(&self, xy: (i32, i32)) -> ZelData { self.view(xy) }
 
     // get a cursor
     fn at(&mut self, xy: impl ToZelPointI) -> At<Self> {

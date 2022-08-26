@@ -23,7 +23,7 @@ impl<const MAX_DIRTY: usize> DirtyRegion<MAX_DIRTY> {
         return self.n_dirty > MAX_DIRTY;
     }
 
-    pub fn record(&mut self, zp: ZelPointI) {
+    pub fn record(&mut self, zp: Zel) {
         if zp.x < 0 || zp.y < 0 { return; }  // screens don't go negative, so this is definitely not in bounds
 
         let point = (zp.x as u32, zp.y as u32);

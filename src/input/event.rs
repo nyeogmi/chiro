@@ -15,31 +15,31 @@ pub enum Event {
 pub enum MouseEvent {
     Click {
         mouse_button: MouseButton, 
-        now: ZelPointI, 
+        now: Zel, 
         now_click_selection: Option<Affordance>,
         now_scroll_selection: Option<Affordance>,
     },
     Up {
         mouse_button: MouseButton, 
-        now: ZelPointI, 
+        now: Zel, 
         now_click_selection: Option<Affordance>,
         now_scroll_selection: Option<Affordance>,
     },
     Drag { 
         mouse_button: MouseButton, 
-        start: ZelPointI, 
-        last: ZelPointI,
-        now: ZelPointI,
+        start: Zel, 
+        last: Zel,
+        now: Zel,
         now_click_selection: Option<Affordance>,
         now_scroll_selection: Option<Affordance>,
     },
     Wiggle { 
-        last: ZelPointI,
-        now: ZelPointI,
+        last: Zel,
+        now: Zel,
         now_click_selection: Option<Affordance>,
         now_scroll_selection: Option<Affordance>,
     },
-    Scroll(f32, ZelPointI, Option<Affordance>),
+    Scroll(f32, Zel, Option<Affordance>),
     // wheel?
 }
 

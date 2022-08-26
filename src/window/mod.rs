@@ -7,7 +7,7 @@ use std::collections::VecDeque;
 
 use minifb as mfb;
 
-use crate::{shared::*, screen::{PixelFB, Screen, Zel, DirtyRegion}, input::{Event, Input}};
+use crate::{shared::*, screen::{PixelFB, Screen, ZelData, DirtyRegion}, input::{Event, Input}};
 
 use self::{type_keyboard::Keyboard, mouse::Mouse, clock::Clock, press_keyboard::PressKeyboard};
 
@@ -182,9 +182,9 @@ impl Eventable for Window {
 impl Drawable for Window {
     fn affordance(&mut self) -> Affordance { self.screen.affordance() }
 
-    fn raw_view(&self, zp: ZelPointI) -> Zel { self.screen.raw_view(zp) }
+    fn raw_view(&self, zp: Zel) -> ZelData { self.screen.raw_view(zp) }
 
-    fn raw_touch(&mut self, zp: ZelPointI, format: bool, cb: impl FnOnce(&mut Zel)) {
+    fn raw_touch(&mut self, zp: Zel, format: bool, cb: impl FnOnce(&mut ZelData)) {
         self.screen.raw_touch(zp, format, |zel| {
             cb(zel);
             self.dirty_region.record(zp)
@@ -196,7 +196,7 @@ impl Drawable for Window {
         self.dirty_region.saturate();
     }
 
-    fn bounds(&mut self) -> ZelRectI {
+    fn bounds(&mut self) -> ZelRect {
         self.screen.bounds()
     }
 

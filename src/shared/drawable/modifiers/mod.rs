@@ -6,10 +6,10 @@ mod reexport_sharedmut;
 mod trait_impl;
 
 #[derive(Clone)]
-pub struct Offset<'d, D: Drawable>(ZelPointI, SharedMut<'d, D>);
+pub struct Offset<'d, D: Drawable>(Zel, SharedMut<'d, D>);
 
 #[derive(Clone)]
-pub struct Clip<'d, D: Drawable>(ZelRectI, SharedMut<'d, D>);
+pub struct Clip<'d, D: Drawable>(ZelRect, SharedMut<'d, D>);
 
 #[derive(Clone)]
 pub struct SetFont<'d, D: Drawable>(Font, SharedMut<'d, D>);

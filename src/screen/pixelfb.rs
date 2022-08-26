@@ -2,7 +2,7 @@ use euclid::*;
 
 use crate::{screen::Screen, shared::*};
 
-use super::Zel;
+use super::ZelData;
 
 pub struct PixelFB {
     buffer: Vec<u32>,
@@ -119,10 +119,10 @@ impl PixelFB {
 }
 
 
-impl Zel {
+impl ZelData {
     // for adapted zels only
     // (doesn't consider transparent colors)
-    fn visually_identical(&self, new: Zel) -> bool {
+    fn visually_identical(&self, new: ZelData) -> bool {
         return self.tile == new.tile && self.bg == new.bg && self.fg == new.fg
     }
 }

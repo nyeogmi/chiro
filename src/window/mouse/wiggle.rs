@@ -1,6 +1,6 @@
 use std::collections::VecDeque;
 
-use crate::{shared::*, input::MouseEvent, screen::Zel};
+use crate::{shared::*, input::MouseEvent, screen::ZelData};
 
 #[derive(Clone, Copy)]
 pub struct WiggleMonitor {
@@ -10,13 +10,13 @@ pub struct WiggleMonitor {
 
 #[derive(Clone, Copy)]
 struct ToSend {
-    last: ZelPointI,
-    now: ZelPointI,
+    last: Zel,
+    now: Zel,
 }
 
 #[derive(Clone, Copy)]
 pub struct State {
-    point: ZelPointI,
+    point: Zel,
 }
 
 impl WiggleMonitor {
@@ -29,7 +29,7 @@ impl WiggleMonitor {
 
     pub(crate) fn at(
         &mut self, 
-        point: ZelPointI, 
+        point: Zel, 
     ) {
         let new = State { point };
         let old = self.old.take();
@@ -48,7 +48,7 @@ impl WiggleMonitor {
     pub(crate) fn post_events(
         &mut self,
         events: &mut VecDeque<crate::input::MouseEvent>, 
-        get_zel: &impl Fn(ZelPointI) -> Zel,
+        get_zel: &impl Fn(Zel) -> ZelData,
     ) {
         if let Some(ToSend { last, now }) = self.event_to_send.take() {
             let zel = get_zel(now);

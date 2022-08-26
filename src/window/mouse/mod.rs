@@ -10,7 +10,7 @@ use minifb::{MouseButton as MinifbMouseButton, MouseMode, Window};
 
 use self::{scroll_wheel::ScrollWheelMonitor, wiggle::WiggleMonitor};
 
-use crate::{input::{MouseEvent, MouseButton}, shared::{ZelPointI, Affordance, ZelSize}, screen::Zel};
+use crate::{input::{MouseEvent, MouseButton}, shared::{Zel, Affordance, ZelSize}, screen::ZelData};
 
 use drag::DragMonitor;
 
@@ -30,7 +30,7 @@ pub(crate) struct Mouse {
 struct State {
     down: EnumMap<MouseButton, bool>,
 
-    zel: ZelPointI,
+    zel: Zel,
     click_selection: Option<Affordance>,
     scroll_selection: Option<Affordance>,
 }
@@ -55,7 +55,7 @@ impl Mouse {
     }
 
     // any_interactor: (normal, scroll)
-    pub fn update(&mut self, size: ZelSize, window: &mut Window, new_tick: bool, get_zel: impl Fn(ZelPointI) -> Zel) {
+    pub fn update(&mut self, size: ZelSize, window: &mut Window, new_tick: bool, get_zel: impl Fn(Zel) -> ZelData) {
         let current_state = Mouse::current_state(size, window, &get_zel);
 
         if let None = current_state {
@@ -111,7 +111,7 @@ impl Mouse {
     }
 
     // normal interactor, scroll interactor
-    fn current_state(size: ZelSize, window: &mut Window, get_zel: &impl Fn(ZelPointI) -> Zel) -> Option<State> {
+    fn current_state(size: ZelSize, window: &mut Window, get_zel: &impl Fn(Zel) -> ZelData) -> Option<State> {
         // NYEO NOTE: The logic in minifb to compensate for DPI scaling is wrong.
         // This logic is correct, however.
         let mouse_pos = if let Some(mp) = window.get_unscaled_mouse_pos(MouseMode::Pass) { 
@@ -121,7 +121,7 @@ impl Mouse {
         let mouse_x_ideal = ((mouse_pos.0 / overall_size.0 as f32) * size.width as f32) as i32;
         let mouse_y_ideal = ((mouse_pos.1 / overall_size.1 as f32) * size.height as f32) as i32;
 
-        let zel_xy: ZelPointI = point2(mouse_x_ideal as i32, mouse_y_ideal as i32);
+        let zel_xy: Zel = point2(mouse_x_ideal as i32, mouse_y_ideal as i32);
         let click_selection: Option<Affordance>;
         let scroll_selection: Option<Affordance>;
 
