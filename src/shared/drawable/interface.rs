@@ -12,24 +12,24 @@ pub trait Drawable: Sized {
     fn raw_view(&self, zp: Zel) -> ZelData;
     fn raw_touch(&mut self, zp: Zel, format: bool, modify: impl FnOnce(&mut ZelData));
 
-    fn view(&self, xy: impl ToZelPointI) -> ZelData {
-        self.raw_view(xy.to_zeli())
+    fn view(&self, xy: impl ToZel) -> ZelData {
+        self.raw_view(xy.to_zel())
     }
 
     fn view_i(&self, xy: (i32, i32)) -> ZelData { self.view(xy) }
 
     // get a cursor
-    fn at(&mut self, xy: impl ToZelPointI) -> At<Self> {
-        At::new(xy.to_zeli(), SharedMut::wrap(self))
+    fn at(&mut self, xy: impl ToZel) -> At<Self> {
+        At::new(xy.to_zel(), SharedMut::wrap(self))
     }
 
     // build modifiers (reexport from SharedMut)
     // unfortunately this has to be done here as these are trait-level functions
-    fn offset(&mut self, xy: impl ToZelPointI) -> Offset<Self> {
+    fn offset(&mut self, xy: impl ToZel) -> Offset<Self> {
         SharedMut::wrap(self).offset(xy)
     }
 
-    fn clip(&mut self, xy0: impl ToZelPointI, xy1: impl ToZelPointI) -> Clip<Self> {
+    fn clip(&mut self, xy0: impl ToZel, xy1: impl ToZel) -> Clip<Self> {
         SharedMut::wrap(self).clip(xy0, xy1)
     }
 

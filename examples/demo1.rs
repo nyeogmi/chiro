@@ -1,4 +1,5 @@
-use chiro::{Window, Font, Drawable, Eventable};
+use chiro::{Font, Drawable, Eventable};
+use chiro::minifb::Window;
 
 fn main() {
     let mut win = Window::new(

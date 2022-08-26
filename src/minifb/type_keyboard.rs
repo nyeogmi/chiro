@@ -2,7 +2,7 @@ use std::{cell::RefCell, collections::{BTreeMap, VecDeque}, rc::Rc};
 
 use minifb::{Key as MinifbKey, Window};
 
-use crate::input::{Keystroke, TypeEvent, Keycode};
+use crate::input::{TypeKey, TypeEvent, TypeKeyCode};
 
 pub(crate) struct Keyboard {
     correlator: KeyCorrelatorRef
@@ -73,7 +73,7 @@ impl KeyCorrelator {
             // see if this is a key where we infer a keycode from a typed character
             if let Some(theoretical_code) = most_likely_keycode(c) {
                 self.events.push_back(censor_unhelpful_features(
-                    TypeEvent::Press(Keystroke {
+                    TypeEvent::Down(TypeKey {
                         shift, control, code: theoretical_code,
                     })
                 ))
@@ -91,7 +91,7 @@ impl KeyCorrelator {
             if !self.keys_down.contains_key(key) {
                 // newly down
                 self.events.push_back(censor_unhelpful_features(
-                    TypeEvent::Press(Keystroke { code, shift, control })
+                    TypeEvent::Down(TypeKey { code, shift, control })
                 ));
             }
         }
@@ -100,7 +100,7 @@ impl KeyCorrelator {
 
             if !new_keys_down.contains(key) {
                 self.events.push_back(censor_unhelpful_features(
-                    TypeEvent::Release(Keystroke { code, shift: details.shift, control: details.control })
+                    TypeEvent::Up(TypeKey { code, shift: details.shift, control: details.control })
                 ))
             }
         }
@@ -111,9 +111,9 @@ impl KeyCorrelator {
     }
 }
 
-fn minifb_to_keycode(key: MinifbKey) -> Option<Keycode> {
+fn minifb_to_keycode(key: MinifbKey) -> Option<TypeKeyCode> {
     use MinifbKey as M;
-    use Keycode::*;
+    use TypeKeyCode::*;
 
     Some(match key {
         M::Key0 => Key0, M::Key1 => Key1, M::Key2 => Key2, M::Key3 => Key3,
@@ -166,8 +166,8 @@ fn minifb_to_keycode(key: MinifbKey) -> Option<Keycode> {
     })
 }
 
-fn most_likely_keycode(c: char) -> Option<Keycode> {
-    use Keycode::*;
+fn most_likely_keycode(c: char) -> Option<TypeKeyCode> {
+    use TypeKeyCode::*;
     Some(match c.to_ascii_uppercase() {
         '\u{08}' => Backspace,
         _ => return None,
@@ -178,13 +178,13 @@ fn censor_unhelpful_features(mut key: TypeEvent) -> TypeEvent {
     // This just deals with a bunch of miscellaneous things bad input systems might do
     key = match key {
         TypeEvent::Type('\r'|'\n') => 
-            TypeEvent::Press(Keystroke { code: Keycode::Enter, shift: false, control: false }),
+            TypeEvent::Down(TypeKey { code: TypeKeyCode::Enter, shift: false, control: false }),
         TypeEvent::Type('\t') => 
-            TypeEvent::Press(Keystroke { code: Keycode::Tab, shift: false, control: false }),
+            TypeEvent::Down(TypeKey { code: TypeKeyCode::Tab, shift: false, control: false }),
         _ => key
     };
 
-    use Keycode::*;
+    use TypeKeyCode::*;
     // Even if the char code wasn't found, try to find it by looking at shift
     key.alter_combo(|combo| {
         let old_key_code = combo.code;

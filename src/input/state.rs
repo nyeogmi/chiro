@@ -62,8 +62,8 @@ impl Keyboard {
 
     fn on_event(&mut self, k: TypeEvent) {
         match k {
-            TypeEvent::Press(_) => { }
-            TypeEvent::Release(_) => { }
+            TypeEvent::Down(_) => { }
+            TypeEvent::Up(_) => { }
             TypeEvent::Type(c) => {
                 self.typed_chars.push(c)
             },

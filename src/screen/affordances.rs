@@ -1,7 +1,7 @@
 use crate::shared::*;
 
 #[derive(Clone)]
-pub struct Affordances {
+pub(crate) struct Affordances {
     next: u64
 }
 

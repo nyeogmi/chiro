@@ -51,29 +51,29 @@ impl ToZelSize for (u32, u32) {
 
 
 // NOTE: Some of these will panic, but none will panic for reasonable screen sizes, so that's OK
-pub trait ToZelPointI {
-    fn to_zeli(self) -> Zel;
+pub trait ToZel {
+    fn to_zel(self) -> Zel;
 }
 
 // == convert the 3 signed point representations to ZelPointI ==
-impl ToZelPointI for Zel {
-    fn to_zeli(self) -> Zel { self }
+impl ToZel for Zel {
+    fn to_zel(self) -> Zel { self }
 }
 
-impl ToZelPointI for (i32, i32) {
-    fn to_zeli(self) -> Zel { point2(self.0, self.1) }
+impl ToZel for (i32, i32) {
+    fn to_zel(self) -> Zel { point2(self.0, self.1) }
 }
 
-impl ToZelPointI for (isize, isize) {
-    fn to_zeli(self) -> Zel { point2(self.0 as i32, self.1 as i32) }
+impl ToZel for (isize, isize) {
+    fn to_zel(self) -> Zel { point2(self.0 as i32, self.1 as i32) }
 }
 
 
 // == convert the 2 unsigned point representations to ZelPointI ==
-impl ToZelPointI for (u32, u32) {
-    fn to_zeli(self) -> Zel { point2(self.0 as i32, self.1 as i32) }
+impl ToZel for (u32, u32) {
+    fn to_zel(self) -> Zel { point2(self.0 as i32, self.1 as i32) }
 }
 
-impl ToZelPointI for (usize, usize) {
-    fn to_zeli(self) -> Zel { point2(self.0 as i32, self.1 as i32) }
+impl ToZel for (usize, usize) {
+    fn to_zel(self) -> Zel { point2(self.0 as i32, self.1 as i32) }
 }

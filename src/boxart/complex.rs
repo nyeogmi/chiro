@@ -1,6 +1,6 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, hash_map::Entry};
 
-use crate::{Drawable, shared::{At, Zel, ToZelPointI, build_rect}, Font};
+use crate::{Drawable, shared::{At, Zel, ToZel, build_rect}, Font};
 
 use super::{charset::box_char, BoxSide};
 
@@ -29,9 +29,9 @@ impl BoxArt {
         }
     }
 
-    pub fn add_box(&mut self, top: impl ToZelPointI, bot: impl ToZelPointI, double_border: bool) {
-        let mut top = top.to_zeli();
-        let mut bot = bot.to_zeli();
+    pub fn add_box(&mut self, top: impl ToZel, bot: impl ToZel, double_border: bool) {
+        let mut top = top.to_zel();
+        let mut bot = bot.to_zel();
         let zel_dims = self.font.char_size();
         top.x /= zel_dims.width as i32;
         top.y /= zel_dims.height as i32;
@@ -42,11 +42,11 @@ impl BoxArt {
 
         if rect.size.width <= 1 {
             for y in rect.min_y()..rect.max_y() - 1 {
-                self.add((rect.min_x(), y), BoxSide::Down, double_border)
+                self.add((rect.min_x(), y), BoxSide::Bottom, double_border)
             }
 
             for y in rect.min_y() + 1..rect.max_y() {
-                self.add((rect.min_x(), y), BoxSide::Up, double_border)
+                self.add((rect.min_x(), y), BoxSide::Top, double_border)
             }
             return;
         }
@@ -73,21 +73,23 @@ impl BoxArt {
         }
 
         for y in rect.min_y()..rect.max_y() - 1 {
-            self.add((rect.min_x(), y), BoxSide::Down, double_border);
-            self.add((rect.max_x() - 1, y), BoxSide::Down, double_border);
+            self.add((rect.min_x(), y), BoxSide::Bottom, double_border);
+            self.add((rect.max_x() - 1, y), BoxSide::Bottom, double_border);
         }
 
         for y in rect.min_y() + 1..rect.max_y() {
-            self.add((rect.min_x(), y), BoxSide::Up, double_border);
-            self.add((rect.max_x() - 1, y), BoxSide::Up, double_border);
+            self.add((rect.min_x(), y), BoxSide::Top, double_border);
+            self.add((rect.max_x() - 1, y), BoxSide::Top, double_border);
         }
     }
 
     fn add(&mut self, at: (i32, i32), side: BoxSide, double_border: bool) {
         let norm_side = 3 - side as u8;
-        let existing = self.content.get(&at.to_zeli()).cloned().unwrap_or(0);
-        let new = existing | (1 << (2 * norm_side + if double_border { 1 } else { 0 }));
-        self.content.insert(at.to_zeli(), new);
-    }
 
+        let new = 1 << (2 * norm_side + if double_border { 1 } else { 0 });
+        match self.content.entry(at.to_zel()) {
+            Entry::Occupied(mut o) => { *o.get_mut() |= new; }
+            Entry::Vacant(v) => { v.insert(new); }
+        };
+    }
 }

@@ -55,20 +55,20 @@ impl MouseButton {
 // TODO: Add an "is_accept()" method that returns true for enter and space
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub enum TypeEvent {
-    Press(Keystroke),
-    Release(Keystroke),
+    Down(TypeKey),
+    Up(TypeKey),
     Type(char),
 }
 
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
-pub struct Keystroke {
-    pub code: Keycode,
+pub struct TypeKey {
+    pub code: TypeKeyCode,
     pub shift: bool,
     pub control: bool,
 }
 
 #[derive(Debug, Enum, Eq, PartialEq, Ord, PartialOrd, Hash, Clone, Copy)]
-pub enum Keycode {
+pub enum TypeKeyCode {
     // Unashamedly inspired by a similar enum from minifb
     Key0 = 0, Key1 = 1, Key2 = 2, Key3 = 3, Key4 = 4,
     Key5 = 5, Key6 = 6, Key7 = 7, Key8 = 8, Key9 = 9,
@@ -111,18 +111,18 @@ pub enum Keycode {
 
 
 impl TypeEvent {
-    pub fn alter_combo(&mut self, alter: impl FnOnce(&mut Keystroke)) {
+    pub fn alter_combo(&mut self, alter: impl FnOnce(&mut TypeKey)) {
         match self {
-            TypeEvent::Press(k) => alter(k),
-            TypeEvent::Release(k) => alter(k),
+            TypeEvent::Down(k) => alter(k),
+            TypeEvent::Up(k) => alter(k),
             TypeEvent::Type(_) => {},
         }
     }
 
-    pub fn get_combo(&self) -> Option<Keystroke> {
+    pub fn get_combo(&self) -> Option<TypeKey> {
         match self {
-            TypeEvent::Press(k) => Some(*k),
-            TypeEvent::Release(k) => Some(*k),
+            TypeEvent::Down(k) => Some(*k),
+            TypeEvent::Up(k) => Some(*k),
             TypeEvent::Type(_) => None,
         }
     }

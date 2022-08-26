@@ -1,4 +1,4 @@
-use crate::{Event, input::{Input, TypeEvent, Keystroke}};
+use crate::{Event, input::{Input, TypeEvent, TypeKey}};
 
 pub trait Eventable {
     fn next_event(&mut self) -> Event;
@@ -16,13 +16,13 @@ pub trait Eventable {
         }
     }
 
-    fn next_keystroke(&mut self) -> Option<Keystroke> {
+    fn next_keystroke(&mut self) -> Option<TypeKey> {
         loop {
             match self.next_event() {
                 Event::Exit => return None,
                 Event::Tick(_) => {},
                 Event::Mouse(_) => {},
-                Event::Type(TypeEvent::Press(evt)) => return Some(evt),
+                Event::Type(TypeEvent::Down(evt)) => return Some(evt),
                 Event::Type(_) => {},
                 Event::Press(_) => {},
             }

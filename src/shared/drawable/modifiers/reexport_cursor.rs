@@ -7,14 +7,14 @@ impl<'a, D: Drawable> At<'a, D> {
     // these don't require &mut, but for type-consistency with Drawable, let's require it
     // forcing a manual clone()
 
-    pub fn offset(&self, xy: impl ToZelPointI) -> At<'a, Offset<'a, D>> {
-        let xy = xy.to_zeli();
+    pub fn offset(&self, xy: impl ToZel) -> At<'a, Offset<'a, D>> {
+        let xy = xy.to_zel();
         self._internally(|x| x.offset(xy))
     }
 
-    pub fn clip(&self, xy0: impl ToZelPointI, xy1: impl ToZelPointI) -> At<'a, Clip<'a, D>> {
-        let xy0 = xy0.to_zeli();
-        let xy1 = xy1.to_zeli();
+    pub fn clip(&self, xy0: impl ToZel, xy1: impl ToZel) -> At<'a, Clip<'a, D>> {
+        let xy0 = xy0.to_zel();
+        let xy1 = xy1.to_zel();
         self._internally(|x| x.clip(xy0, xy1))
     }
 

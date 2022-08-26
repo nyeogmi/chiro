@@ -4,17 +4,17 @@ use super::*;
 impl<'d, D: Drawable> SharedMut<'d, D> {
     // == modifiers etc ==
     // get a cursor
-    pub fn at(self, xy: impl ToZelPointI) -> At<'d, D> {
-        At::new(xy.to_zeli(), self)
+    pub fn at(self, xy: impl ToZel) -> At<'d, D> {
+        At::new(xy.to_zel(), self)
     }
 
     // build modifiers
-    pub fn offset(self, xy: impl ToZelPointI) -> Offset<'d, D> {
-        Offset(xy.to_zeli(), self)
+    pub fn offset(self, xy: impl ToZel) -> Offset<'d, D> {
+        Offset(xy.to_zel(), self)
     }
 
-    pub fn clip(self, xy0: impl ToZelPointI, xy1: impl ToZelPointI) -> Clip<'d, D> {
-        Clip(build_rect(xy0.to_zeli(), xy1.to_zeli()), self)
+    pub fn clip(self, xy0: impl ToZel, xy1: impl ToZel) -> Clip<'d, D> {
+        Clip(build_rect(xy0.to_zel(), xy1.to_zel()), self)
     }
 
     pub fn font(self, font: Font) -> SetFont<'d, D> { SetFont(font, self) }

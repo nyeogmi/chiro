@@ -1,7 +1,8 @@
 
 use std::{hash::{Hash, Hasher}, collections::hash_map::DefaultHasher};
 
-use chiro::{Window, Drawable, Eventable};
+use chiro::{Drawable, Eventable};
+use chiro::minifb::Window;
 
 fn main() {
     let mut win = Window::new(

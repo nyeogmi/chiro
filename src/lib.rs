@@ -7,11 +7,25 @@ mod input;
 mod screen;
 mod output;
 mod tileset;
-mod window;
+pub mod minifb;
 
 pub use boxart::{BoxArt, BoxSettings};
 pub use font::Font;
-pub use input::{Event, Mouse, Keyboard, MouseButton};
-pub use output::{FChar, FString, ToFString, ToFChar, Output};
-pub use shared::{Color, Drawable, Eventable, ToZelPointI, ToZelSize};
-pub use window::Window;
+pub use input::{Input, Mouse, Keyboard, MouseButton, Event};
+pub use output::{FChar, FCharDraw, FString, ToFString, ToFChar, Output};
+pub use shared::{Color, Drawable, Eventable, ToZel, ToZelSize, Zel, At};
+
+pub mod structures {
+    pub use super::input::{Event, MouseEvent, TypeEvent, PressEvent};
+    pub use super::input::{TypeKey, PressKey, TypeKeyCode};
+    pub use super::screen::ZelData;
+}
+
+pub mod pub_internals {
+    // internals that you might still have some reason to want
+    pub use super::screen::{DirtyRegion, PixelFB, Screen};
+}
+
+pub mod modifiers {
+    pub use super::shared::{Offset, Clip, SetFont, SetFg, SetBg, SetClick, SetScroll};
+}

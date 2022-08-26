@@ -24,16 +24,16 @@ impl<'a, D: Drawable> At<'a, D> {
 
 
     // == cursor stuff ==
-    pub fn at(&self, xy: impl ToZelPointI) -> At<'a, D> {
+    pub fn at(&self, xy: impl ToZel) -> At<'a, D> {
         self.drawable.clone().at(xy)
     }
 
 
-    pub fn shifted(&self, xy: impl ToZelPointI) -> At<'a, D> {
-        let point = xy.to_zeli();
+    pub fn shifted(&self, xy: impl ToZel) -> At<'a, D> {
+        let point = xy.to_zel();
         At {
             start: self.start,
-            position: (self.position.x + point.x, self.position.y + point.y).to_zeli(),
+            position: (self.position.x + point.x, self.position.y + point.y).to_zel(),
             drawable: self.drawable.clone(),
         }
     }
@@ -105,19 +105,19 @@ impl<'a, D: Drawable> At<'a, D> {
         self
     }
 
-    pub fn draw_rect(self, other: impl ToZelPointI) -> Self {
+    pub fn draw_rect(self, other: impl ToZel) -> Self {
         self.draw_rect_ext(other, BoxSettings::default())
     }
 
-    pub fn draw_rect_ext(self, other: impl ToZelPointI, settings: BoxSettings) -> Self {
-        let (mut x1, mut y1) = other.to_zeli().to_tuple();
+    pub fn draw_rect_ext(self, other: impl ToZel, settings: BoxSettings) -> Self {
+        let (mut x1, mut y1) = other.to_zel().to_tuple();
         x1 -= self.position.x;
         y1 -= self.position.y;
         draw_box(&self, point2(0, 0), point2(x1, y1), settings);
         self
     }
 
-    pub fn fill_rect(self, other: impl ToZelPointI, fc: impl ToFChar) -> Self {
+    pub fn fill_rect(self, other: impl ToZel, fc: impl ToFChar) -> Self {
         let font = self.drawable.borrow(|d| d.get_font());
         self._forall_rect(font, other, |x, clip| x._putc(font, fc.to_fchar(), Some(clip)))
     }
@@ -126,7 +126,7 @@ impl<'a, D: Drawable> At<'a, D> {
         self.fill_rect(other, fc)
     }
 
-    pub fn touch_rect(self, other: impl ToZelPointI) -> Self {
+    pub fn touch_rect(self, other: impl ToZel) -> Self {
         self.fill_rect(other, FChar::empty())
     }
 
@@ -134,9 +134,9 @@ impl<'a, D: Drawable> At<'a, D> {
         self.touch_rect(other)
     }
 
-    fn _forall_rect(mut self, font: Font, other: impl ToZelPointI, mut cb: impl FnMut(Self, ZelRect) -> Self) -> Self {
+    fn _forall_rect(mut self, font: Font, other: impl ToZel, mut cb: impl FnMut(Self, ZelRect) -> Self) -> Self {
         // TODO: clip to avoid exceeding bounds
-        let zeli_other = other.to_zeli();
+        let zeli_other = other.to_zel();
 
         let big_clip = self.drawable.borrow(|d| d.bounds());
         let small_clip = build_rect(self.position, zeli_other);

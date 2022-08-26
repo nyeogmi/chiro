@@ -1,6 +1,6 @@
 use enum_map::{EnumMap};
 
-use crate::{shared::{At, ToZelPointI, build_rect}, Drawable};
+use crate::{shared::{At, ToZel, build_rect}, Drawable};
 
 use super::{BoxSide, charset::box_char};
 
@@ -24,34 +24,34 @@ impl BoxSettings {
     pub fn double() -> BoxSettings {
         let mut settings = BoxSettings::default();
 
-        settings.borders[BoxSide::Up] = Border::Double;
-        settings.borders[BoxSide::Down] = Border::Double;
+        settings.borders[BoxSide::Top] = Border::Double;
+        settings.borders[BoxSide::Bottom] = Border::Double;
         settings.borders[BoxSide::Left] = Border::Double;
         settings.borders[BoxSide::Right] = Border::Double;
 
         settings
     }
 
-    pub fn double_top(mut self) -> BoxSettings { self.borders[BoxSide::Up] = Border::Double; self }
-    pub fn double_bottom(mut self) -> BoxSettings { self.borders[BoxSide::Down] = Border::Double; self }
+    pub fn double_top(mut self) -> BoxSettings { self.borders[BoxSide::Top] = Border::Double; self }
+    pub fn double_bottom(mut self) -> BoxSettings { self.borders[BoxSide::Bottom] = Border::Double; self }
     pub fn double_left(mut self) -> BoxSettings { self.borders[BoxSide::Left] = Border::Double; self }
     pub fn double_right(mut self) -> BoxSettings { self.borders[BoxSide::Right] = Border::Double; self }
 
-    pub fn single_top(mut self) -> BoxSettings { self.borders[BoxSide::Up] = Border::Single; self }
-    pub fn single_bottom(mut self) -> BoxSettings { self.borders[BoxSide::Down] = Border::Single; self }
+    pub fn single_top(mut self) -> BoxSettings { self.borders[BoxSide::Top] = Border::Single; self }
+    pub fn single_bottom(mut self) -> BoxSettings { self.borders[BoxSide::Bottom] = Border::Single; self }
     pub fn single_left(mut self) -> BoxSettings { self.borders[BoxSide::Left] = Border::Single; self }
     pub fn single_right(mut self) -> BoxSettings { self.borders[BoxSide::Right] = Border::Single; self }
 }
 
 
-pub(crate) fn draw_box(cursor: &At<impl Drawable>, top: impl ToZelPointI, bot: impl ToZelPointI, settings: BoxSettings) {
+pub(crate) fn draw_box(cursor: &At<impl Drawable>, top: impl ToZel, bot: impl ToZel, settings: BoxSettings) {
     let font = cursor.get_font();
     let sz = font.char_size();
     let sz_x = sz.width as i32;
     let sz_y = sz.height as i32;
 
-    let mut top = top.to_zeli();
-    let mut bot = bot.to_zeli();
+    let mut top = top.to_zel();
+    let mut bot = bot.to_zel();
     top.x /= sz_x;
     top.y /= sz_y;
     bot.x /= sz_x;
@@ -84,8 +84,8 @@ pub(crate) fn draw_box(cursor: &At<impl Drawable>, top: impl ToZelPointI, bot: i
 
     if r.size.height <= 1 {
         let use_double = 
-            settings.borders[BoxSide::Up] == Border::Double ||
-            settings.borders[BoxSide::Down] == Border::Double;
+            settings.borders[BoxSide::Top] == Border::Double ||
+            settings.borders[BoxSide::Bottom] == Border::Double;
 
         let mut left_crumb: u8 = 0b00_00_00_01;
         let mut right_crumb: u8 = 0b00_01_00_00;
@@ -103,8 +103,8 @@ pub(crate) fn draw_box(cursor: &At<impl Drawable>, top: impl ToZelPointI, bot: i
 
     let use_double_left = settings.borders[BoxSide::Left] == Border::Double;
     let use_double_right = settings.borders[BoxSide::Right] == Border::Double;
-    let use_double_up = settings.borders[BoxSide::Up] == Border::Double;
-    let use_double_down = settings.borders[BoxSide::Down] == Border::Double;
+    let use_double_up = settings.borders[BoxSide::Top] == Border::Double;
+    let use_double_down = settings.borders[BoxSide::Bottom] == Border::Double;
 
     // draw left border
     {
