@@ -17,9 +17,7 @@ fn main() {
 Also, hi!".to_fstring().bg(0x00ff00).fg(0x000000);
    
 
-    win.at_i((2, 2)).put(
-        (para1 + "\n".to_fstring() + para2).wrap(76)
-    );
+    win.at_i((2, 2)).put((para1 + "\n".to_fstring() + para2).wrap(76));
 
     while let Some(_) = win.next_char() { }
 }
