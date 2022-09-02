@@ -16,6 +16,10 @@ pub use input::{Input, Mouse, Keyboard, MouseButton, Event};
 pub use output::{FChar, FCharDraw, FString, ToFString, ToFChar, Output};
 pub use shared::{Brush, Chiro, ChiroError, Color, Drawable, Eventable, ToZel, ToZelSize, Zel, At};
 
+pub mod simple_io {
+    pub use super::shared::SimpleIO;
+}
+
 pub mod structures {
     pub use super::input::{Event, MouseEvent, TypeEvent, PressEvent};
     pub use super::input::{TypeKey, PressKey, TypeKeyCode};

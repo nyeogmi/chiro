@@ -2,6 +2,7 @@
 use std::{hash::{Hash, Hasher}, collections::hash_map::DefaultHasher, process::exit};
 
 use chiro::*;
+use chiro::simple_io::*;
 use chiro::minifb::Window;
 
 fn main() {
@@ -12,14 +13,11 @@ fn main() {
         (192, 192, 192),
         Box::new(|| exit(0)),
     );
-    let _ = run(&mut win);
-}
 
-fn run(win: &mut Window) -> Chiro<()> {
     let chars: Vec<char> = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()_+-=[]{}|\\;:'\",./<>?                           ".chars().collect();
 
     for i in 0.. {
-        let _ = win.next_tick()?;
+        let _ = win.tick();
         for x in 0..80 {
             for y in 0..30 {
                 let y2 = y * 2;
@@ -39,6 +37,4 @@ fn run(win: &mut Window) -> Chiro<()> {
             }
         }
     };
-
-    Ok(())
 }

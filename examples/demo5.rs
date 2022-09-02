@@ -1,4 +1,7 @@
+use std::process::exit;
+
 use chiro::*;
+use chiro::simple_io::*;
 use chiro::minifb::Window;
 
 fn main() {
@@ -7,12 +10,9 @@ fn main() {
         (80, 60), 
         0x000000,
         0xc0c0c0,
-        Box::new(|| ()),
+        Box::new(|| exit(0)),
     );
-    let _ = run(&mut win);
-}
 
-fn run(win: &mut Window) -> Chiro<()> {
     win.at_i((1, 1)).put(
         FString::from("Lot mo see your ") + 
         FString::from("bats").bg(0x00ff00).fg(0x000000) + 
@@ -24,7 +24,6 @@ fn run(win: &mut Window) -> Chiro<()> {
     );
 
     loop {
-        let evt = win.next_char()?;
-        println!("{:?}", evt);
+        println!("{:?}", win.char());
     }
 }

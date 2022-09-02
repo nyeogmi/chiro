@@ -1,6 +1,7 @@
 use std::process::exit;
 
 use chiro::*;
+use chiro::simple_io::*;
 use chiro::minifb::Window;
 
 fn main() {
@@ -12,14 +13,10 @@ fn main() {
         Box::new(|| exit(0)),
     );
 
-    let _ = run(&mut win);
-}
-
-fn run(win: &mut Window) -> Chiro<()> {
     win.at_i((1, 1)).put("IT'S A BAT PARTY!! WHOA!");
     win.at_i((1, 3)).font(Font::Small).fg((128, 0, 0)).put("IT'S A BAT PARTY!! WHOA!");
 
     loop {
-        println!("{:?}", win.next_char()?);
+        println!("{:?}", win.char());
     }
 }

@@ -47,3 +47,34 @@ pub trait Eventable {
         }
     }
 }
+
+// extension methods to Eventable trait which assume the program will terminate before a ChiroError::Closed is returned
+pub trait SimpleIO {
+    fn tick(&mut self) -> u64;
+    fn keystroke(&mut self) -> TypeKey;
+    fn char(&mut self) -> char;
+}
+
+
+impl <E: Eventable> SimpleIO for E {
+    fn tick(&mut self) -> u64 {
+        match self.next_tick() {
+            Ok(n) => n,
+            Err(ChiroError::Closed) => panic!("tick should have occurred or program should have terminated")
+        }
+    }
+
+    fn keystroke(&mut self) -> TypeKey {
+        match self.next_keystroke() {
+            Ok(n) => n,
+            Err(ChiroError::Closed) => panic!("keystroke should have occurred or program should have terminated")
+        }
+    }
+
+    fn char(&mut self) -> char {
+        match self.next_char() {
+            Ok(n) => n,
+            Err(ChiroError::Closed) => panic!("char should have occurred or program should have terminated")
+        }
+    }
+}
