@@ -57,9 +57,9 @@ impl<'d, D:Drawable> Drawable for SetFg<'d, D> {
 
     fn raw_touch(&mut self, zp: Zel, format: bool, modify: impl FnOnce(&mut ZelData)) {
         self.1.borrow(|d| { d.raw_touch(zp, format, |z| { 
+            if format { z.fg = self.0; } 
             modify(z);
-            if format { z.fg = self.0 } });
-        } )
+        }); } )
     }
 }
 
@@ -72,8 +72,8 @@ impl<'d, D:Drawable> Drawable for SetBg<'d, D> {
 
     fn raw_touch(&mut self, zp: Zel, format: bool, modify: impl FnOnce(&mut ZelData)) {
         self.1.borrow(|d| { d.raw_touch(zp, format, |z| { 
-            modify(z);
             if format { z.bg = self.0 }
+            modify(z);
         }); } )
     }
 }
@@ -87,8 +87,8 @@ impl<'d, D:Drawable> Drawable for SetClick<'d, D> {
 
     fn raw_touch(&mut self, zp: Zel, format: bool, modify: impl FnOnce(&mut ZelData)) {
         self.1.borrow(|d| { d.raw_touch(zp, format, |z| { 
-            modify(z); 
             if format { z.click = self.0 }
+            modify(z); 
         }); } )
     }
 }
@@ -102,8 +102,8 @@ impl<'d, D:Drawable> Drawable for SetScroll<'d, D> {
 
     fn raw_touch(&mut self, zp: Zel, format: bool, modify: impl FnOnce(&mut ZelData)) {
         self.1.borrow(|d| { d.raw_touch(zp, format, |z| { 
-            modify(z); 
             if format { z.scroll = self.0 }
+            modify(z); 
         }); } )
     }
 }

@@ -1,6 +1,7 @@
-// Run indefinitely in the background without busy-waiting
+use std::process::exit;
 
 use chiro::*;
+use chiro::simple_io::*;
 use chiro::minifb::Window;
 
 fn main() {
@@ -9,14 +10,17 @@ fn main() {
         (80, 60), 
         0x000000,
         0xc0c0c0,
-        Box::new(|| println!("closed!")),
+        Box::new(|| exit(0)),
     );
-    let _ = run(&mut win);
-}
 
-fn run(win: &mut Window) -> Chiro<()> {
+    win.at((0, 0)).put("A");
+    win.at((1, 0)).fg(0xff0000).put("B");
+    win.at((2, 0)).fg(0xff0000).fg(0x00ff00).put("C");
+    win.at((0, 2)).put("D");
+    win.at((1, 2)).bg(0xff0000).put("E");
+    win.at((2, 2)).bg(0xff0000).bg(0x00ff00).put("F");
+
     loop {
-        let _ = win.next_tick()?;
-        println!("open?: {}", win.is_open())
+        let _ = win.tick();
     }
 }
