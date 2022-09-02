@@ -15,7 +15,7 @@ fn main() {
     let _ = run(&mut win);
 }
 
-fn run(win: &mut Window) -> ChiroResult<()> {
+fn run(win: &mut Window) -> Chiro<()> {
     let chars: Vec<char> = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()_+-=[]{}|\\;:'\",./<>?                           ".chars().collect();
 
     loop {

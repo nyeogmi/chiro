@@ -12,7 +12,7 @@ fn main() {
     let _ = run(&mut win);
 }
 
-fn run(win: &mut Window) -> ChiroResult<()> {
+fn run(win: &mut Window) -> Chiro<()> {
     win.at_i((1, 1)).put(
         FString::from("Lot mo see your ") + 
         FString::from("bats").bg(0x00ff00).fg(0x000000) + 

@@ -1,6 +1,6 @@
 use crate::{Event, input::{Input, TypeEvent, TypeKey}};
 
-pub type ChiroResult<T> = Result<T, ChiroError>;
+pub type Chiro<T> = Result<T, ChiroError>;
 
 pub enum ChiroError { Closed }
 
@@ -9,7 +9,7 @@ pub trait Eventable {
     fn input(&self) -> &Input;
 
     fn is_open(&self) -> bool;
-    fn next_tick(&mut self) -> ChiroResult<u64> {
+    fn next_tick(&mut self) -> Chiro<u64> {
         loop {
             match self.next_event() {
                 Event::Exit => { return Err(ChiroError::Closed) }
@@ -21,7 +21,7 @@ pub trait Eventable {
         }
     }
 
-    fn next_keystroke(&mut self) -> ChiroResult<TypeKey> {
+    fn next_keystroke(&mut self) -> Chiro<TypeKey> {
         loop {
             match self.next_event() {
                 Event::Exit => { return Err(ChiroError::Closed) },
@@ -34,7 +34,7 @@ pub trait Eventable {
         }
     }
 
-    fn next_char(&mut self) -> ChiroResult<char> {
+    fn next_char(&mut self) -> Chiro<char> {
         loop {
             match self.next_event() {
                 Event::Exit => { return Err(ChiroError::Closed) },

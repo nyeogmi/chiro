@@ -1,4 +1,4 @@
-use chiro::{Eventable, Drawable, ChiroResult};
+use chiro::{Eventable, Drawable, Chiro};
 use chiro::minifb::Window;
 
 fn main() {
@@ -13,7 +13,7 @@ fn main() {
     let _ = run(&mut win);
 }
 
-fn run(win: &mut Window) -> ChiroResult<()> {
+fn run(win: &mut Window) -> Chiro<()> {
     let hello = win.affordance();
     let goodbye = win.affordance();
     let scroll = win.affordance();

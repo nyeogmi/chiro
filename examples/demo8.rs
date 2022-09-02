@@ -14,7 +14,7 @@ fn main() {
     let _ = run(&mut win);
 }
 
-fn run(win: &mut Window) -> ChiroResult<()> {
+fn run(win: &mut Window) -> Chiro<()> {
     loop {
         let _ = win.next_tick()?;
         println!("open?: {}", win.is_open())

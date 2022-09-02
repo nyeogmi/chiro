@@ -13,7 +13,7 @@ fn main() {
     let _ = run(&mut win);
 }
 
-fn run(win: &mut Window) -> ChiroResult<()> {
+fn run(win: &mut Window) -> Chiro<()> {
     win.at_i((2, 2)).fill_rect_i((78, 58), 'a');
     win.at_i((4, 4)).bg(0xff0000).fg(0).touch_rect_i((10, 9));
     win.at_i((4, 9)).bg(0xffff00).fg(0).touch_rect_i((10, 10));

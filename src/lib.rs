@@ -14,7 +14,7 @@ pub use boxart::{BoxArt, BoxSettings};
 pub use font::Font;
 pub use input::{Input, Mouse, Keyboard, MouseButton, Event};
 pub use output::{FChar, FCharDraw, FString, ToFString, ToFChar, Output};
-pub use shared::{ChiroResult, ChiroError, Color, Drawable, Eventable, ToZel, ToZelSize, Zel, At};
+pub use shared::{Chiro, ChiroError, Color, Drawable, Eventable, ToZel, ToZelSize, Zel, At};
 
 pub mod structures {
     pub use super::input::{Event, MouseEvent, TypeEvent, PressEvent};

@@ -15,7 +15,7 @@ fn main() {
     let _ = run(&mut win);
 }
 
-fn run(win: &mut Window) -> ChiroResult<()> {
+fn run(win: &mut Window) -> Chiro<()> {
     win.at_i((1, 1)).put("IT'S A BAT PARTY!! WHOA!");
     win.at_i((1, 3)).font(Font::Small).fg((128, 0, 0)).put("IT'S A BAT PARTY!! WHOA!");
 

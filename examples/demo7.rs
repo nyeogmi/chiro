@@ -1,4 +1,4 @@
-use chiro::{Drawable, Eventable, BoxArt, Font, BoxSettings, ChiroResult};
+use chiro::{Drawable, Eventable, BoxArt, Font, BoxSettings, Chiro};
 use chiro::minifb::Window;
 
 fn main() {
@@ -12,7 +12,7 @@ fn main() {
     let _ = run(&mut win);
 }
 
-fn run(win: &mut Window) -> ChiroResult<()> {
+fn run(win: &mut Window) -> Chiro<()> {
     let mut box_art = BoxArt::new(Font::Small);
     box_art.add_box((-4, -4), (4, 4), true);
     box_art.draw(win.at((4, 4)));
