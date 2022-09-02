@@ -6,7 +6,7 @@ impl<'d, D:Drawable> Drawable for Offset<'d, D> {
     fn affordance(&mut self) -> Affordance { self.1.borrow(|d| d.affordance()) }
     fn get_font(&self) -> Font { self.1.borrow(|d| d.get_font()) }
 
-    fn bounds(&mut self) -> ZelRect {
+    fn bounds(&self) -> ZelRect {
         self.1.borrow(|d| d.bounds().translate(-self.0.to_vector()))
     }
 
@@ -23,7 +23,7 @@ impl<'d, D:Drawable> Drawable for Clip<'d, D> {
     fn affordance(&mut self) -> Affordance { self.1.borrow(|d| d.affordance()) }
     fn get_font(&self) -> Font { self.1.borrow(|d| d.get_font()) }
 
-    fn bounds(&mut self) -> ZelRect { self.0 }
+    fn bounds(&self) -> ZelRect { self.0 }
 
     fn raw_view(&self, zp: Zel) -> ZelData {
         if !self.0.contains(zp) { return ZelData::default() }
@@ -40,7 +40,7 @@ impl<'d, D:Drawable> Drawable for SetFont<'d, D> {
     fn affordance(&mut self) -> Affordance { self.1.borrow(|d| d.affordance()) }
     fn get_font(&self) -> Font { self.0 }
 
-    fn bounds(&mut self) -> ZelRect { self.1.borrow(|d| d.bounds()) }
+    fn bounds(&self) -> ZelRect { self.1.borrow(|d| d.bounds()) }
     fn raw_view(&self, zp: Zel) -> ZelData { self.1.borrow(|d| d.raw_view(zp)) }
 
     fn raw_touch(&mut self, zp: Zel, format: bool, modify: impl FnOnce(&mut ZelData)) {
@@ -52,7 +52,7 @@ impl<'d, D:Drawable> Drawable for SetFg<'d, D> {
     fn affordance(&mut self) -> Affordance { self.1.borrow(|d| d.affordance()) }
     fn get_font(&self) -> Font { self.1.borrow(|d| d.get_font()) }
 
-    fn bounds(&mut self) -> ZelRect { self.1.borrow(|d| d.bounds()) }
+    fn bounds(&self) -> ZelRect { self.1.borrow(|d| d.bounds()) }
     fn raw_view(&self, zp: Zel) -> ZelData { self.1.borrow(|d| d.raw_view(zp)) }
 
     fn raw_touch(&mut self, zp: Zel, format: bool, modify: impl FnOnce(&mut ZelData)) {
@@ -67,7 +67,7 @@ impl<'d, D:Drawable> Drawable for SetBg<'d, D> {
     fn affordance(&mut self) -> Affordance { self.1.borrow(|d| d.affordance()) }
     fn get_font(&self) -> Font { self.1.borrow(|d| d.get_font()) }
 
-    fn bounds(&mut self) -> ZelRect { self.1.borrow(|d| d.bounds()) }
+    fn bounds(&self) -> ZelRect { self.1.borrow(|d| d.bounds()) }
     fn raw_view(&self, zp: Zel) -> ZelData { self.1.borrow(|d| d.raw_view(zp)) }
 
     fn raw_touch(&mut self, zp: Zel, format: bool, modify: impl FnOnce(&mut ZelData)) {
@@ -82,7 +82,7 @@ impl<'d, D:Drawable> Drawable for SetClick<'d, D> {
     fn affordance(&mut self) -> Affordance { self.1.borrow(|d| d.affordance()) }
     fn get_font(&self) -> Font { self.1.borrow(|d| d.get_font()) }
 
-    fn bounds(&mut self) -> ZelRect { self.1.borrow(|d| d.bounds()) }
+    fn bounds(&self) -> ZelRect { self.1.borrow(|d| d.bounds()) }
     fn raw_view(&self, zp: Zel) -> ZelData { self.1.borrow(|d| d.raw_view(zp)) }
 
     fn raw_touch(&mut self, zp: Zel, format: bool, modify: impl FnOnce(&mut ZelData)) {
@@ -97,7 +97,7 @@ impl<'d, D:Drawable> Drawable for SetScroll<'d, D> {
     fn affordance(&mut self) -> Affordance { self.1.borrow(|d| d.affordance()) }
     fn get_font(&self) -> Font { self.1.borrow(|d| d.get_font()) }
 
-    fn bounds(&mut self) -> ZelRect { self.1.borrow(|d| d.bounds()) }
+    fn bounds(&self) -> ZelRect { self.1.borrow(|d| d.bounds()) }
     fn raw_view(&self, zp: Zel) -> ZelData { self.1.borrow(|d| d.raw_view(zp)) }
 
     fn raw_touch(&mut self, zp: Zel, format: bool, modify: impl FnOnce(&mut ZelData)) {

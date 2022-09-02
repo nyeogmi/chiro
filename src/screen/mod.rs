@@ -76,15 +76,11 @@ impl Drawable for Screen {
         cb(self.zels.get_mut((xy.y as u32 * self.size.width + xy.x as u32) as usize).expect("if zels is correctly formed, this zel exists"))
     }
 
-    fn bounds(&mut self) -> ZelRect {
+    fn bounds(&self) -> ZelRect {
         Rect::new(point2(0, 0), size2(self.size.width as i32, self.size.height as i32))
     }
 
     fn get_font(&self) -> crate::Font {
         return Font::Normal
-    }
-
-    fn clear(&mut self) {
-        self.resize(self.size)
     }
 }

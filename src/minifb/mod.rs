@@ -195,12 +195,7 @@ impl Drawable for Window {
         });
     }
 
-    fn clear(&mut self) {
-        self.screen.clear();
-        self.dirty_region.saturate();
-    }
-
-    fn bounds(&mut self) -> ZelRect {
+    fn bounds(&self) -> ZelRect {
         self.screen.bounds()
     }
 

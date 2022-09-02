@@ -2,11 +2,18 @@ use euclid::*;
 
 use crate::{shared::*, Font, FChar, ToFChar, ToFString, boxart::{draw_box, BoxSettings}};
 
-#[derive(Clone)]
+use super::brush::Brush;
+
 pub struct At<'d, D: Drawable>{
     start: Zel,
     position: Zel, 
-    drawable: Shared<'d, D>
+    drawable: Shared<'d, D>,
+}
+
+impl<'d, D: Drawable> Clone for At<'d, D> {
+    fn clone(&self) -> Self {
+        At { start: self.start, position: self.position, drawable: self.drawable.clone() }
+    }
 }
 
 impl<'d, D: Drawable> At<'d, D> {
@@ -20,10 +27,9 @@ impl<'a, D: Drawable> At<'a, D> {
     pub fn affordance(&mut self) -> Affordance { self.drawable.borrow(|d| d.affordance()) }
     pub fn get_font(&self) -> Font { self.drawable.borrow(|d| d.get_font()) }
 
-
     // == cursor stuff ==
     pub fn at(&self, xy: impl ToZel) -> At<'a, D> {
-        self.drawable.clone().at(xy)
+        At::new(xy.to_zel(), self.drawable.clone())
     }
 
 
@@ -39,8 +45,9 @@ impl<'a, D: Drawable> At<'a, D> {
     pub fn at_i(&self, xy: (i32, i32)) -> At<'a, D> { self.at(xy) }
     pub fn shifted_i(&self, xy: (i32, i32)) -> At<'a, D> { self.shifted(xy) }
 
-    pub(crate) fn _internally<T: Drawable+'a>(&self, f: impl Fn(Shared<'a, D>) -> T) -> At<'a, T> {
-        At { start: self.start, position: self.position, drawable: Shared::owned(f(self.drawable.clone())) }
+    pub(crate) fn map<T: Drawable>(&self, f: impl Fn(Brush<'a, D>) -> Brush<'a, T>) -> At<'a, T> {
+        let brush = Brush { drawable: self.drawable.clone() };
+        At { start: self.start, position: self.position, drawable: f(brush).drawable }
     }
 
     fn _putc(mut self, font: Font, fc: FChar, clip: Option<ZelRect>) -> Self {
@@ -57,7 +64,7 @@ impl<'a, D: Drawable> At<'a, D> {
                         if !cl.contains(point) { return; } 
                     }
 
-                    self.drawable.borrow(|d| d.raw_touch(point, true, |_| { }));
+                    self.drawable.borrow(|d| d.touch(point, true, |_| { }));
                 });
                 self.position.x += w as i32;
             },
@@ -72,12 +79,10 @@ impl<'a, D: Drawable> At<'a, D> {
                         if !cl.contains(point) { return; } 
                     }
 
-                    self.drawable.borrow(|d| d.raw_touch(point, true, |zel| { zel.tile = tile; }));
+                    self.drawable.borrow(|d| d.touch(point, true, |zel| { zel.tile = tile; }));
 
                     if fcd.formatting.makes_changes() {
-                        self.drawable.borrow(|d| d.raw_touch(point, false, |zel| {
-                            fcd.formatting.apply(zel)
-                        }));
+                        self.drawable.borrow(|d| d.touch(point, false, |zel| { fcd.formatting.apply(zel) }));
                     }
                 });
                 self.position.x += w as i32;

@@ -1,3 +1,4 @@
+mod brush;
 mod cursor;
 mod interface;
 
