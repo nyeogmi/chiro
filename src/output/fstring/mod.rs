@@ -91,9 +91,7 @@ impl FString {
 
     pub fn map_fchars_draw(mut self, mut f: impl FnMut(FCharDraw) -> FCharDraw) -> FString {
         for i in self.characters.iter_mut() { 
-            if let FChar::Draw(fcd) = i {
-                *fcd = f(*fcd)
-            }
+            i.map_draw(&mut f);
         }
         self
     }

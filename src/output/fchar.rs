@@ -17,6 +17,13 @@ impl FChar {
     pub fn empty() -> Self {
         FChar::Empty
     }
+
+    pub(crate) fn map_draw(mut self, f: impl FnOnce(FCharDraw) -> FCharDraw) -> FChar {
+        if let FChar::Draw(fcd) = &mut self {
+            *fcd = f(*fcd)
+        };
+        self
+    }
 }
 
 impl From<char> for FChar {
