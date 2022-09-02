@@ -12,7 +12,7 @@ impl<'d, D: Drawable> Clone for Brush<'d, D> {
 
 impl <'a, D: Drawable> Brush<'a, D> {
     // == reexports from drawable == 
-    pub fn affordance(&mut self) -> Affordance { self.drawable.borrow(|d| d.affordance()) }
+    pub fn affordance(&self) -> Affordance { self.drawable.borrow(|d| d.affordance()) }
     pub fn get_font(&self) -> Font { self.drawable.borrow(|d| d.get_font()) }
 
     // == brush stuff ==
@@ -84,7 +84,7 @@ impl <'a, D: Drawable> Brush<'a, D> {
     }
 
     // type-coercing 
-    pub fn at_i(&mut self, xy: (i32, i32)) -> At<'a, D> { 
+    pub fn at_i(&self, xy: (i32, i32)) -> At<'a, D> { 
         self.at(xy)
     }
     pub fn offset_i(&self, xy: (i32, i32)) -> Brush<'a, Offset<'a, D>> { 
@@ -95,12 +95,12 @@ impl <'a, D: Drawable> Brush<'a, D> {
     }
 
     // drawing
-    pub fn fill(&mut self, fc: impl ToFChar) {
+    pub fn fill(&self, fc: impl ToFChar) {
         let bounds = self.bounds();
         self.at(bounds.min()).fill_rect(bounds.max(), fc);
     }
 
-    pub fn clear(&mut self) {
+    pub fn clear(&self) {
         self.fill(' ')
     }
 }
