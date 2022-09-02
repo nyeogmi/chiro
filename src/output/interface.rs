@@ -41,6 +41,14 @@ impl<'a> ToFString for &'a str {
     }
 }
 
+impl<'a> ToFString for &'a String {
+    type FCharIterator = impl DoubleEndedIterator<Item = FChar>;
+
+    fn to_fchars(self) -> Self::FCharIterator {
+        self.chars().map(FChar::from)
+    }
+}
+
 impl ToFChar for FChar {
     fn to_fchar(&self) -> FChar { *self }
 }
