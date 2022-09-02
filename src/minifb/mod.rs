@@ -14,7 +14,7 @@ use self::{type_keyboard::Keyboard, mouse::Mouse, clock::Clock, press_keyboard::
 pub struct Window {
     // minifb state
     title: String,
-    screen: Screen,
+    screen: Screen, closed: bool,
 
     // chiropterm state
     window: Option<mfb::Window>,
@@ -40,7 +40,7 @@ impl Window {
         let mut win = Window {
             title,
 
-            window: None,
+            window: None, closed: false,
 
             fb: PixelFB::new(), screen: Screen::new(size, bg, fg),
             input: Input::new(), postponed_event: None,
@@ -87,6 +87,9 @@ impl Window {
 impl Eventable for Window {
     fn next_event<'a>(&mut self) -> Event {
         if let Some(postponed) = self.postponed_event.take() { self.input.on_event(postponed) }
+        if self.closed {
+            return Event::Exit;
+        }
 
         let evt = 'main: loop {
             // make sure all events that are waiting around have been dealt with
@@ -106,6 +109,7 @@ impl Eventable for Window {
 
             if !win.is_open() {
                 self.window = None;
+                self.closed = true;
                 break Event::Exit;
             }
 
