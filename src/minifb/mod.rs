@@ -14,10 +14,10 @@ use self::{type_keyboard::Keyboard, mouse::Mouse, clock::Clock, press_keyboard::
 pub struct Window {
     // minifb state
     title: String,
-    screen: Screen, closed: bool,
+    screen: Screen,
 
     // chiropterm state
-    window: Option<mfb::Window>,
+    window: Option<mfb::Window>, on_exit: Box<dyn FnMut()>, exit_sent: bool,
     fb: PixelFB, 
     input: Input, postponed_event: Option<Event>,
     dirty_region: DirtyRegion,
@@ -36,13 +36,13 @@ pub struct Window {
 const HANDLE_INPUT_EVERY: usize = 4166; // 240 FPS
 
 impl Window {
-    pub fn new(title: String, size: impl ToZelSize, bg: impl ToColor, fg: impl ToColor) -> Self {
+    pub fn new(title: String, size: impl ToZelSize, bg: impl ToColor, fg: impl ToColor, on_exit: Box<dyn FnMut()>) -> Self {
         let mut win = Window {
             title,
 
-            window: None, closed: false,
+            window: None, on_exit,
 
-            fb: PixelFB::new(), screen: Screen::new(size, bg, fg),
+            fb: PixelFB::new(), screen: Screen::new(size, bg, fg), exit_sent: false,
             input: Input::new(), postponed_event: None,
             dirty_region: DirtyRegion::new(),
 
@@ -85,11 +85,11 @@ impl Window {
 
 
 impl Eventable for Window {
+    fn is_open(&self) -> bool { !self.exit_sent }
+
     fn next_event<'a>(&mut self) -> Event {
         if let Some(postponed) = self.postponed_event.take() { self.input.on_event(postponed) }
-        if self.closed {
-            return Event::Exit;
-        }
+        if self.exit_sent { return Event::Exit }
 
         let evt = 'main: loop {
             // make sure all events that are waiting around have been dealt with
@@ -108,8 +108,8 @@ impl Eventable for Window {
             let win = self.window.as_mut().expect("just reconstituted it");
 
             if !win.is_open() {
-                self.window = None;
-                self.closed = true;
+                self.exit_sent = true;
+                (self.on_exit)();
                 break Event::Exit;
             }
 

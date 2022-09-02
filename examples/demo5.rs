@@ -1,4 +1,4 @@
-use chiro::{Drawable, Eventable, FString, Font, FChar, ToFString};
+use chiro::*;
 use chiro::minifb::Window;
 
 fn main() {
@@ -7,8 +7,12 @@ fn main() {
         (80, 60), 
         0x000000,
         0xc0c0c0,
+        Box::new(|| ()),
     );
+    let _ = run(&mut win);
+}
 
+fn run(win: &mut Window) -> ChiroResult<()> {
     win.at_i((1, 1)).put(
         FString::from("Lot mo see your ") + 
         FString::from("bats").bg(0x00ff00).fg(0x000000) + 
@@ -20,11 +24,7 @@ fn main() {
     );
 
     loop {
-        let evt = win.next_char();
-        if let Some(te) = evt {
-            println!("{:?}", te);
-        } else {
-            return
-        }
+        let evt = win.next_char()?;
+        println!("{:?}", evt);
     }
 }

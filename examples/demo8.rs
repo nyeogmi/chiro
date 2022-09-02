@@ -1,4 +1,4 @@
-use std::process::exit;
+// Run indefinitely in the background without busy-waiting
 
 use chiro::*;
 use chiro::minifb::Window;
@@ -9,17 +9,14 @@ fn main() {
         (80, 60), 
         0x000000,
         0xc0c0c0,
-        Box::new(|| exit(0)),
+        Box::new(|| println!("closed!")),
     );
-
     let _ = run(&mut win);
 }
 
 fn run(win: &mut Window) -> ChiroResult<()> {
-    win.at_i((1, 1)).put("IT'S A BAT PARTY!! WHOA!");
-    win.at_i((1, 3)).font(Font::Small).fg((128, 0, 0)).put("IT'S A BAT PARTY!! WHOA!");
-
     loop {
-        println!("{:?}", win.next_char()?);
+        let _ = win.next_tick()?;
+        println!("open?: {}", win.is_open())
     }
 }

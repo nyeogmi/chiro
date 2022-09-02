@@ -1,4 +1,4 @@
-use chiro::{Eventable, Drawable};
+use chiro::{Eventable, Drawable, ChiroResult};
 use chiro::minifb::Window;
 
 fn main() {
@@ -7,8 +7,13 @@ fn main() {
         (80, 60), 
         (0, 0, 0),
         (192, 192, 192),
+        Box::new(|| ()),
     );
 
+    let _ = run(&mut win);
+}
+
+fn run(win: &mut Window) -> ChiroResult<()> {
     let hello = win.affordance();
     let goodbye = win.affordance();
     let scroll = win.affordance();
@@ -17,10 +22,7 @@ fn main() {
     win.at_i((2, 4)).click(goodbye).scroll(scroll).put("goodbye!!");
 
     loop {
-        let evt = win.next_tick();
-        if let None = evt {
-            return
-        }
+        let _ = win.next_tick()?;
 
         let mouse = win.input().mouse();
         if mouse.left_clicked(hello) { println!("left-clicked hello!"); }

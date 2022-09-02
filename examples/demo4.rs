@@ -1,4 +1,4 @@
-use chiro::{Eventable, Drawable};
+use chiro::*;
 use chiro::minifb::Window;
 
 fn main() {
@@ -7,8 +7,13 @@ fn main() {
         (80, 60), 
         (0, 0, 0),
         (192, 192, 192),
+        Box::new(|| ()),
     );
 
+    let _ = run(&mut win);
+}
+
+fn run(win: &mut Window) -> ChiroResult<()> {
     win.at_i((2, 2)).fill_rect_i((78, 58), 'a');
     win.at_i((4, 4)).bg(0xff0000).fg(0).touch_rect_i((10, 9));
     win.at_i((4, 9)).bg(0xffff00).fg(0).touch_rect_i((10, 10));
@@ -17,9 +22,6 @@ fn main() {
     win.clip_i((1, 1), (5, 5)).fg(0xff0000).fill('Z');
 
     loop {
-        let evt = win.next_tick();
-        if let None = evt {
-            return
-        }
+        let _ = win.next_tick()?;
     }
 }
