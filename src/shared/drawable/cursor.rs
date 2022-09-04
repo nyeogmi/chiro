@@ -108,6 +108,11 @@ impl<'a, D: Drawable> At<'a, D> {
         self
     }
 
+    pub fn put_st(self, st: SuperTile) -> Self {
+        self.drawable.borrow(|d| d.deposit_supertile(self.position, st));
+        self
+    }
+
     pub fn draw_rect(self, other: impl ToZel) -> Self {
         self.draw_rect_ext(other, BoxSettings::default())
     }

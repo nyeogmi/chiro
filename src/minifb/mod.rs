@@ -137,7 +137,7 @@ impl Eventable for Window {
             }
 
             // and from mouse
-            self.mouse.update(self.screen.size, win, is_new_tick, |xy| self.screen.view(xy));
+            self.mouse.update(self.screen.size, win, is_new_tick, |xy| self.screen.raw_view(xy).0);
 
             while let Some(mouse_event) = self.mouse.pop_event() {
                 self.input_events.push_back(Event::Mouse(mouse_event))
@@ -186,8 +186,6 @@ impl Eventable for Window {
 impl Drawable for Window {
     fn affordance(&mut self) -> Affordance { self.screen.affordance() }
 
-    fn raw_view(&self, zp: Zel) -> ZelData { self.screen.raw_view(zp) }
-
     fn raw_touch(&mut self, zp: Zel, format: bool, cb: impl FnOnce(&mut ZelData)) {
         self.screen.raw_touch(zp, format, |zel| {
             cb(zel);
@@ -201,5 +199,12 @@ impl Drawable for Window {
 
     fn get_font(&self) -> crate::Font {
         self.screen.get_font()
+    }
+
+    fn deposit_supertile(&mut self, zp: Zel, tile: SuperTile) {
+        self.screen.deposit_supertile(zp, tile);
+        if self.screen.bounds().contains(zp) {
+            self.dirty_region.record(zp)
+        }
     }
 }

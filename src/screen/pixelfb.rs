@@ -68,11 +68,18 @@ impl PixelFB {
         let mut touched = false;
 
         let mut cb = |x: u32, y: u32| {
-            let old = old.view((x, y)).adapted_for(old_wbg, old_wfg, old_selection);
-            let new = new.view((x, y)).adapted_for(new_wbg, new_wfg, new_selection);
+            let (old_zd, old_id) = old.raw_view(point2(x as i32, y as i32));
+            let old_zd = old_zd.adapted_for(old_wbg, old_wfg, old_selection);
+            let (new_zd, new_id) = new.raw_view(point2(x as i32, y as i32));
+            let new_zd = new_zd.adapted_for(new_wbg, new_wfg, new_selection);
 
-            if !old.visually_identical(new) {
-                new.physically_draw(buffer, x, y, w);
+            if !visually_identical((old_zd, old_id), (new_zd, new_id)) {
+                if let Some(id) = new_id { 
+                    id.physically_draw(buffer, x, y, w); 
+                }
+                else {
+                    new_zd.physically_draw(buffer, x, y, w);
+                }
                 touched = true
             }
         };
@@ -101,9 +108,15 @@ impl PixelFB {
 
         for y in 0..h {
             for x in 0..w {
-                let new = new.view((x, y)).adapted_for(new_wbg, new_wfg, new_mouseover);
+                let (new_zd, new_id) = new.raw_view(point2(x as i32, y as i32));
+                let new_zd = new_zd.adapted_for(new_wbg, new_wfg, new_mouseover);
 
-                new.physically_draw(&mut self.buffer, x, y, w);
+                if let Some(id) = new_id { 
+                    id.physically_draw(&mut self.buffer, x, y, w); 
+                }
+                else {
+                    new_zd.physically_draw(&mut self.buffer, x, y, w);
+                }
             }
         }
     }
@@ -119,10 +132,9 @@ impl PixelFB {
 }
 
 
-impl ZelData {
     // for adapted zels only
     // (doesn't consider transparent colors)
-    fn visually_identical(&self, new: ZelData) -> bool {
-        return self.tile == new.tile && self.bg == new.bg && self.fg == new.fg
-    }
+fn visually_identical((old_zd, _): (ZelData, Option<&SuperTile>), (new_zd, new_id): (ZelData, Option<&SuperTile>)) -> bool {
+    if new_id.is_some() { return false }
+    return old_zd.tile == new_zd.tile && old_zd.bg == new_zd.bg && old_zd.fg == new_zd.fg
 }

@@ -24,13 +24,6 @@ impl <'a, D: Drawable> Brush<'a, D> {
         }
     }
 
-    pub fn view(&self, xy: impl ToZel) -> ZelData {
-        let xy = xy.to_zel();
-        self.drawable.borrow(|d| d.raw_view(xy))
-    }
-
-    pub fn view_i(&self, xy: (i32, i32)) -> ZelData { self.view(xy) }
-
     pub fn touch(&self, xy: impl ToZel, format: bool, modify: impl FnOnce(&mut ZelData)) {
         let xy = xy.to_zel();
         self.drawable.borrow(|d| d.raw_touch(xy, format, modify))
