@@ -82,6 +82,16 @@ impl Keyboard {
             }
         }
     }
+
+    pub fn typed_chars(&self) -> &str { &self.typed_chars }
+
+    pub fn any_is_pressed(&self) -> bool { self.is_pressed.values().any(|x| *x) }
+    pub fn any_is_released(&self) -> bool { self.is_released.values().any(|x| *x) }
+    pub fn any_is_down(&self) -> bool { self.is_down.values().any(|x| *x) }
+
+    pub fn is_pressed(&self, key: PressKey) -> bool { self.is_pressed[key] }
+    pub fn is_released(&self, key: PressKey) -> bool { self.is_released[key] }
+    pub fn is_down(&self, key: PressKey) -> bool { self.is_down[key] }
 }
 
 pub struct Mouse {
@@ -149,10 +159,16 @@ impl Mouse {
 
     pub fn is_click_over(&self, affordance: Affordance) -> bool { self.click_selection == Some(affordance) }
     pub fn is_scroll_over(&self, affordance: Affordance) -> bool { self.scroll_selection == Some(affordance) }
+
+    pub fn any_is_pressed(&self) -> bool { self.is_pressed.values().any(|x| *x) }
+    pub fn any_is_released(&self) -> bool { self.is_released.values().any(|x| *x) }
+    pub fn any_is_down(&self) -> bool { self.is_down.values().any(|x| *x) }
+
     pub fn is_pressed(&self, button: MouseButton) -> bool { self.is_pressed[button] }
     pub fn is_released(&self, button: MouseButton) -> bool { self.is_pressed[button] }
     pub fn is_down(&self, button: MouseButton) -> bool { self.is_pressed[button] }
 
+    pub fn any_clicked(&self, affordance: Affordance) -> bool { self.any_is_pressed() && self.is_click_over(affordance) }
     pub fn left_clicked(&self, affordance: Affordance) -> bool { self.is_pressed(MouseButton::Left) && self.is_click_over(affordance) }
     pub fn right_clicked(&self, affordance: Affordance) -> bool { self.is_pressed(MouseButton::Right) && self.is_click_over(affordance) }
     pub fn scrolled_on(&self, affordance: Affordance) -> Option<f32> {
