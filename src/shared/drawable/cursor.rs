@@ -79,7 +79,9 @@ impl<'a, D: Drawable> At<'a, D> {
                         if !cl.contains(point) { return; } 
                     }
 
-                    self.drawable.borrow(|d| d.touch(point, true, |zel| { zel.tile = tile; }));
+                    self.drawable.borrow(|d| d.touch(point, true, |zel| { 
+                        zel.tile = tile; 
+                    }));
 
                     if fcd.formatting.makes_changes() {
                         self.drawable.borrow(|d| d.touch(point, false, |zel| { fcd.formatting.apply(zel) }));

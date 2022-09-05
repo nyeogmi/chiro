@@ -4,7 +4,7 @@ use std::{ops::Add, fmt::Display};
 
 use super::{fchar::{FChar, FCharDraw}, interface::ToFString};
 
-#[derive(Clone, Default)]
+#[derive(Clone, Default, Debug)]
 pub struct FString {
     pub(super) characters: Vec<FChar>,
 }

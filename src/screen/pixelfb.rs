@@ -134,7 +134,8 @@ impl PixelFB {
 
     // for adapted zels only
     // (doesn't consider transparent colors)
-fn visually_identical((old_zd, _): (ZelData, Option<&SuperTile>), (new_zd, new_id): (ZelData, Option<&SuperTile>)) -> bool {
+fn visually_identical((old_zd, old_id): (ZelData, Option<&SuperTile>), (new_zd, new_id): (ZelData, Option<&SuperTile>)) -> bool {
     if new_id.is_some() { return false }
+    if old_id.is_some() { return false }
     return old_zd.tile == new_zd.tile && old_zd.bg == new_zd.bg && old_zd.fg == new_zd.fg
 }

@@ -5,6 +5,7 @@ use crate::shared::*;
 
 use super::{Event, MouseEvent, TypeEvent, MouseButton, PressKey, PressEvent};
 
+#[derive(Clone)]
 pub struct Input {
     keyboard: Keyboard,
     mouse: Mouse,
@@ -37,6 +38,7 @@ impl Input {
     }
 }
 
+#[derive(Clone)]
 pub struct Keyboard {
     typed_chars: String,
     is_down: EnumMap<PressKey, bool>,
@@ -94,6 +96,7 @@ impl Keyboard {
     pub fn is_down(&self, key: PressKey) -> bool { self.is_down[key] }
 }
 
+#[derive(Clone)]
 pub struct Mouse {
     click_selection: Option<Affordance>,
     scroll_selection: Option<Affordance>,
@@ -177,6 +180,7 @@ impl Mouse {
     }
 }
 
+#[derive(Clone)]
 pub struct Drag {
     pub start: Zel,
     pub last: Zel,
