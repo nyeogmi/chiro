@@ -36,8 +36,6 @@ impl WiggleMonitor {
         self.old.replace(new);
         let old = if let Some(old) = old { old } else { return };
 
-        if old.point == new.point { return }
-
         if let Some(e) = &mut self.event_to_send {
             e.now = new.point;
         } else {
