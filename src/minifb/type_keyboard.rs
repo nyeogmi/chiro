@@ -142,7 +142,6 @@ fn minifb_to_keycode(key: MinifbKey) -> Option<TypeKeyCode> {
         M::LeftBracket => LeftBracket, M::Minus => Minus, M::Period => Period,
         M::RightBracket => RightBracket, M::Semicolon => Semicolon,
 
-        // we get backspaces specifically from text
         M::Slash => Slash, M::Backspace => Backspace, M::Delete => Delete,
         M::End => End, M::Enter => Enter,
 
