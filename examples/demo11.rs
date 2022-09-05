@@ -39,6 +39,13 @@ fn main() {
         if win.input().keyboard().any_is_pressed() { break; }
     }
 
+    win.at((0, 2)).put("Is that you?");
+
+    loop {
+        let _ = win.tick();
+        if win.input().keyboard().any_is_pressed() { break; }
+    }
+
     win.draw().clear();
     win.at((0, 2)).put(" A B ");
     println!("{:?}", " A B ".to_fstring());

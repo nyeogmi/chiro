@@ -64,6 +64,7 @@ impl Clone for Screen {
         self.size = other.size.clone();
         self.affordances = other.affordances.clone();
         self.zels.clone_from(&other.zels);
+        self.zel_supertiles.clone_from(&other.zel_supertiles);
         self.bg = other.bg;
         self.fg = other.fg;
     }

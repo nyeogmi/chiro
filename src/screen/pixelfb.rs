@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 use euclid::*;
 
 use crate::{screen::Screen, shared::*};
@@ -132,10 +134,15 @@ impl PixelFB {
 }
 
 
-    // for adapted zels only
-    // (doesn't consider transparent colors)
+// for adapted zels only
+// (doesn't consider transparent colors)
 fn visually_identical((old_zd, old_id): (ZelData, Option<&SuperTile>), (new_zd, new_id): (ZelData, Option<&SuperTile>)) -> bool {
-    if new_id.is_some() { return false }
-    if old_id.is_some() { return false }
-    return old_zd.tile == new_zd.tile && old_zd.bg == new_zd.bg && old_zd.fg == new_zd.fg
+    match (new_id, old_id) {
+        (Some(_), None) => return false,
+        (None, Some(_)) => return false,
+        (Some(x), Some(y)) => return Rc::ptr_eq(&x.0, &y.0),
+        (None, None) => {
+            old_zd.tile == new_zd.tile && old_zd.bg == new_zd.bg && old_zd.fg == new_zd.fg
+        }
+    }
 }
